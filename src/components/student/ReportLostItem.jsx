@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./ReportLostItem.css";
 import reportLostIcon from "../../assets/icons/report-lost-icon.png";
 
@@ -11,6 +11,8 @@ const ReportLostItem = ({ onClose }) => {
     description: "",
     photo: null
   });
+  
+  const formTopRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,16 +28,32 @@ const ReportLostItem = ({ onClose }) => {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      itemTitle: "",
+      category: "",
+      dateLost: "",
+      location: "",
+      description: "",
+      photo: null
+    });
+  };
+
+  const scrollToTop = () => {
+    if (formTopRef.current) {
+      formTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Report Lost Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
-    onClose();
+    resetForm();
+    scrollToTop();
   };
 
   return (
-    <div className="reportlost-page">
-      <button className="reportlost-back-arrow" onClick={onClose}>← Back</button>
-      
+    <div className="reportlost-page" ref={formTopRef}>
       <div className="reportlost-form-container">
         <div className="reportlost-form-header">
           <img src={reportLostIcon} alt="report icon" className="reportlost-header-icon" />
@@ -127,7 +145,7 @@ const ReportLostItem = ({ onClose }) => {
             </div>
 
             <div className="reportlost-form-buttons">
-              <button type="submit" className="reportlost-submit-btn">SUBMIT REPORT</button>
+              <button type="submit" className="reportlost-submit-btn">UPLOAD REPORT</button>
               <button type="button" className="reportlost-cancel-btn" onClick={onClose}>Cancel</button>
             </div>
           </form>

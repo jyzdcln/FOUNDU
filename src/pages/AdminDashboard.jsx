@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AdminDashboard.css";
+import ReportLostItem from "../components/student/ReportLostItem";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
 import pendingIcon from "../assets/icons/pending-icon.png";
@@ -8,17 +9,46 @@ import matchedIcon from "../assets/icons/matched-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
 import returnedIcon from "../assets/icons/returned-icon.png";
 import logoutIcon from "../assets/icons/logout-icon.png";
+import adminLostIcon from "../assets/icons/admin-lost-icon.png";
+import adminFoundIcon from "../assets/icons/admin-found-icon.png";
 
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState("dashboard");
   const [pendingCount, setPendingCount] = useState(0);
   const [pendingReports, setPendingReports] = useState([]);
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportType, setReportType] = useState("");
 
   const handleLogout = () => {
     alert("Logout");
   };
 
+  const handleCloseForm = () => {
+    setShowReportForm(false);
+    setReportType("");
+  };
+
+  const handleMenuClick = (menu) => {
+    setShowReportForm(false);
+    setActiveMenu(menu);
+  };
+
+  const handleReportLost = () => {
+    setReportType("lost");
+    setShowReportForm(true);
+    setActiveMenu("lost");
+  };
+
+  const handleReportFound = () => {
+    setReportType("found");
+    setShowReportForm(true);
+    setActiveMenu("found");
+  };
+
   const getPageTitle = () => {
+    if (showReportForm) {
+      return reportType === "lost" ? "Report Lost Item" : "Report Found Item";
+    }
     switch(activeMenu) {
       case "dashboard": return "Dashboard";
       case "pending": return "Pending Reports";
@@ -31,6 +61,18 @@ const AdminDashboard = () => {
   };
 
   const getPageContent = () => {
+    if (showReportForm) {
+      if (reportType === "lost") {
+        return <ReportLostItem onClose={handleCloseForm} />;
+      } else {
+        return (
+          <div className="content-box">
+            <p>Coming soon... Report Found Item</p>
+          </div>
+        );
+      }
+    }
+    
     switch(activeMenu) {
       case "dashboard":
         return (
@@ -40,7 +82,6 @@ const AdminDashboard = () => {
       case "pending":
         return (
           <div className="content-box">
-            <h3>Pending Reports List</h3>
             {pendingReports.length === 0 ? (
               <p>No pending reports</p>
             ) : (
@@ -62,28 +103,24 @@ const AdminDashboard = () => {
       case "verified":
         return (
           <div className="content-box">
-            <h3>Verified Items</h3>
             <p>Coming soon... (Function 2)</p>
           </div>
         );
       case "matched":
         return (
           <div className="content-box">
-            <h3>Matched Items</h3>
             <p>Coming soon... (Function 3)</p>
           </div>
         );
       case "claimed":
         return (
           <div className="content-box">
-            <h3>Claimed Items</h3>
             <p>Coming soon... (Function 4)</p>
           </div>
         );
       case "returned":
         return (
           <div className="content-box">
-            <h3>Returned Items</h3>
             <p>Coming soon... (Function 5)</p>
           </div>
         );
@@ -101,29 +138,38 @@ const AdminDashboard = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => setActiveMenu("dashboard")}>
+          <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => handleMenuClick("dashboard")}>
             <img src={dashboardIcon} alt="dashboard" className="nav-icon-img" />
             Dashboard
           </button>
-          <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => setActiveMenu("pending")}>
+          <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => handleMenuClick("pending")}>
             <img src={pendingIcon} alt="pending" className="nav-icon-img" />
             Pending Reports
           </button>
-          <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => setActiveMenu("verified")}>
+          <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => handleMenuClick("verified")}>
             <img src={verifiedIcon} alt="verified" className="nav-icon-img" />
             Verified Items
           </button>
-          <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => setActiveMenu("matched")}>
+          <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => handleMenuClick("matched")}>
             <img src={matchedIcon} alt="matched" className="nav-icon-img" />
             Matched Items
           </button>
-          <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => setActiveMenu("claimed")}>
+          <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => handleMenuClick("claimed")}>
             <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
             Claimed Items
           </button>
-          <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => setActiveMenu("returned")}>
+          <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => handleMenuClick("returned")}>
             <img src={returnedIcon} alt="returned" className="nav-icon-img" />
             Returned Items
+          </button>
+          
+          <button className={`nav-item ${activeMenu === "lost" ? "active" : ""}`} onClick={handleReportLost}>
+            <img src={adminLostIcon} alt="report lost" className="nav-icon-img" />
+            Report Lost Item
+          </button>
+          <button className={`nav-item ${activeMenu === "found" ? "active" : ""}`} onClick={handleReportFound}>
+            <img src={adminFoundIcon} alt="report found" className="nav-icon-img" />
+            Report Found Item
           </button>
         </nav>
 
@@ -138,13 +184,15 @@ const AdminDashboard = () => {
 
       <div className="main-content">
         <div className="top-bar">
-          <h1>{getPageTitle()}</h1>
+          <div className="top-bar-left">
+            <h1>{getPageTitle()}</h1>
+          </div>
           <div className="admin-info">
             <div className="avatar">JD</div>
           </div>
         </div>
 
-        {activeMenu === "dashboard" && (
+        {!showReportForm && activeMenu === "dashboard" && (
           <div className="stats-container">
             <div className="stat-card">
               <h3>Pending Reports</h3>

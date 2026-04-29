@@ -2,6 +2,7 @@
   max-width: 700px;
   margin: 0 auto;
   width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-back-arrow {
@@ -16,6 +17,7 @@
   display: block;
   text-align: left;
   width: fit-content;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-back-arrow:hover {
@@ -28,6 +30,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-header {
@@ -37,6 +40,7 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-header-icon {
@@ -48,8 +52,9 @@
   justify-content: center;
   background: rgba(245, 245, 245, 0.664);
 }
+
 .reportlost-header-icon {
-  width: 64px;
+  width: 63px;
   height: 64px;
 }
 
@@ -59,6 +64,7 @@
   font-weight: 600;
   color: white;
   margin: 0 0 12px 0;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-subtitle-row {
@@ -66,6 +72,7 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-subtitle-label {
@@ -77,21 +84,25 @@
   border: white;
   padding: 0.5px 6px;
   border-radius: 13px;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-subtitle-text {
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-body {
   padding: 32px;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-group {
   margin-bottom: 24px;
   text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-group label {
@@ -102,6 +113,7 @@
   margin-bottom: 8px;
   letter-spacing: 0.5px;
   text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-group input,
@@ -112,16 +124,16 @@
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.9rem;
-  font-family: 'Inter', sans-serif;
   background: white;
   text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-group input:focus,
 .reportlost-form-group select:focus,
 .reportlost-form-group textarea:focus {
   outline: none;
-  border-color: black; 
+  border-color: black;
   box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
 }
 
@@ -129,6 +141,7 @@
   display: flex;
   gap: 20px;
   text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-row .reportlost-form-group {
@@ -143,6 +156,7 @@
   cursor: pointer;
   background: #fafafa;
   transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-photo-upload-area:hover {
@@ -159,11 +173,13 @@
   font-size: 0.85rem;
   color: #666;
   margin: 4px 0;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-upload-hint {
   font-size: 0.7rem;
   color: #999;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-selected-file {
@@ -173,12 +189,14 @@
   border-radius: 6px;
   font-size: 0.8rem;
   color: #2e7d32;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-form-buttons {
   display: flex;
   gap: 16px;
   margin-top: 24px;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-submit-btn {
@@ -192,6 +210,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-submit-btn:hover {
@@ -209,6 +228,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
 }
 
 .reportlost-cancel-btn:hover {

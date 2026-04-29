@@ -79,7 +79,7 @@ const LandingPage = () => {
       <div className="full-width-wrapper">
         <header className="full-header">
           <div className="header-content">
-            <div className="logo">FOUNDU</div>
+            <div className="logo">FoundU</div>
             <div className="header-actions">
               <span className="lang">Home</span>
                 <span className="lang">About</span>
@@ -92,7 +92,6 @@ const LandingPage = () => {
         </header>
       </div>
 
-      {/* POPUP */}
       {showLoginPopup && (
         <LoginPopup
           isClosing={isClosing}
