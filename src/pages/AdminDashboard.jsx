@@ -1,0 +1,180 @@
+import React, { useState } from "react";
+import "./AdminDashboard.css";
+
+import dashboardIcon from "../assets/icons/dashboard-icon.png";
+import pendingIcon from "../assets/icons/pending-icon.png";
+import verifiedIcon from "../assets/icons/verified-icon.png";
+import matchedIcon from "../assets/icons/matched-icon.png";
+import claimedIcon from "../assets/icons/claimed-icon.png";
+import returnedIcon from "../assets/icons/returned-icon.png";
+import logoutIcon from "../assets/icons/logout-icon.png";
+
+const AdminDashboard = () => {
+  const [activeMenu, setActiveMenu] = useState("dashboard");
+  const [pendingCount, setPendingCount] = useState(0);
+  const [pendingReports, setPendingReports] = useState([]);
+
+  const handleLogout = () => {
+    alert("Logout");
+  };
+
+  const getPageTitle = () => {
+    switch(activeMenu) {
+      case "dashboard": return "Dashboard";
+      case "pending": return "Pending Reports";
+      case "verified": return "Verified Items";
+      case "matched": return "Matched Items";
+      case "claimed": return "Claimed Items";
+      case "returned": return "Returned Items";
+      default: return "Dashboard";
+    }
+  };
+
+  const getPageContent = () => {
+    switch(activeMenu) {
+      case "dashboard":
+        return (
+          <div className="content-box">
+           </div>
+        );
+      case "pending":
+        return (
+          <div className="content-box">
+            <h3>Pending Reports List</h3>
+            {pendingReports.length === 0 ? (
+              <p>No pending reports</p>
+            ) : (
+              <div className="report-list">
+                {pendingReports.map((report) => (
+                  <div key={report.id} className="report-item">
+                    <div>
+                      <strong>{report.name}</strong>
+                      <p>Found at: {report.location}</p>
+                      <p>Date: {report.date}</p>
+                    </div>
+                    <button className="verify-btn">Verify</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      case "verified":
+        return (
+          <div className="content-box">
+            <h3>Verified Items</h3>
+            <p>Coming soon... (Function 2)</p>
+          </div>
+        );
+      case "matched":
+        return (
+          <div className="content-box">
+            <h3>Matched Items</h3>
+            <p>Coming soon... (Function 3)</p>
+          </div>
+        );
+      case "claimed":
+        return (
+          <div className="content-box">
+            <h3>Claimed Items</h3>
+            <p>Coming soon... (Function 4)</p>
+          </div>
+        );
+      case "returned":
+        return (
+          <div className="content-box">
+            <h3>Returned Items</h3>
+            <p>Coming soon... (Function 5)</p>
+          </div>
+        );
+      default:
+        return <p>Welcome to Dashboard</p>;
+    }
+  };
+
+  return (
+    <div className="admin-dashboard">
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <h2>Admin Panel</h2>
+          <p>Welcome, Jayz Daclan</p>
+        </div>
+
+        <nav className="sidebar-nav">
+          <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => setActiveMenu("dashboard")}>
+            <img src={dashboardIcon} alt="dashboard" className="nav-icon-img" />
+            Dashboard
+          </button>
+          <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => setActiveMenu("pending")}>
+            <img src={pendingIcon} alt="pending" className="nav-icon-img" />
+            Pending Reports
+          </button>
+          <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => setActiveMenu("verified")}>
+            <img src={verifiedIcon} alt="verified" className="nav-icon-img" />
+            Verified Items
+          </button>
+          <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => setActiveMenu("matched")}>
+            <img src={matchedIcon} alt="matched" className="nav-icon-img" />
+            Matched Items
+          </button>
+          <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => setActiveMenu("claimed")}>
+            <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
+            Claimed Items
+          </button>
+          <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => setActiveMenu("returned")}>
+            <img src={returnedIcon} alt="returned" className="nav-icon-img" />
+            Returned Items
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="admin-logout-btn" onClick={handleLogout}>
+            <img src={logoutIcon} alt="logout" className="admin-logout-icon-img" />
+            Logout
+          </button>
+          <div className="footer-text"></div>
+        </div>
+      </div>
+
+      <div className="main-content">
+        <div className="top-bar">
+          <h1>{getPageTitle()}</h1>
+          <div className="admin-info">
+            <div className="avatar">JD</div>
+          </div>
+        </div>
+
+        {activeMenu === "dashboard" && (
+          <div className="stats-container">
+            <div className="stat-card">
+              <h3>Pending Reports</h3>
+              <p className="stat-number">{pendingCount}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Verified Items</h3>
+              <p className="stat-number">0</p>
+            </div>
+            <div className="stat-card">
+              <h3>Matched Items</h3>
+              <p className="stat-number">0</p>
+            </div>
+            <div className="stat-card">
+              <h3>Claimed Items</h3>
+              <p className="stat-number">1</p>
+            </div>
+            <div className="stat-card">
+              <h3>Returned Items</h3>
+              <p className="stat-number">1</p>
+            </div>
+          </div>
+        )}
+
+        <div className="content-area">
+          {getPageContent()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
