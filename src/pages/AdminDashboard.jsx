@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./AdminDashboard.css";
 import ReportLostItem from "../components/student/ReportLostItem";
 
@@ -8,9 +8,10 @@ import verifiedIcon from "../assets/icons/verified-icon.png";
 import matchedIcon from "../assets/icons/matched-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
 import returnedIcon from "../assets/icons/returned-icon.png";
-import logoutIcon from "../assets/icons/logout-icon.png";
 import adminLostIcon from "../assets/icons/admin-lost-icon.png";
 import adminFoundIcon from "../assets/icons/admin-found-icon.png";
+import adminUserIcon from "../assets/icons/admin-user-icon.png";
+import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
 
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState("dashboard");
@@ -18,9 +19,16 @@ const AdminDashboard = () => {
   const [pendingReports, setPendingReports] = useState([]);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportType, setReportType] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    alert("Logout");
+    alert("Logged out!");
+  };
+
+  const handleSettings = () => {
+    alert("Settings - Coming soon!");
+    setIsDropdownOpen(false);
   };
 
   const handleCloseForm = () => {
@@ -44,6 +52,22 @@ const AdminDashboard = () => {
     setShowReportForm(true);
     setActiveMenu("found");
   };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const getPageTitle = () => {
     if (showReportForm) {
@@ -75,10 +99,7 @@ const AdminDashboard = () => {
     
     switch(activeMenu) {
       case "dashboard":
-        return (
-          <div className="content-box">
-           </div>
-        );
+        return <div className="content-box"></div>;
       case "pending":
         return (
           <div className="content-box">
@@ -174,10 +195,6 @@ const AdminDashboard = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="admin-logout-btn" onClick={handleLogout}>
-            <img src={logoutIcon} alt="logout" className="admin-logout-icon-img" />
-            Logout
-          </button>
           <div className="footer-text"></div>
         </div>
       </div>
@@ -187,8 +204,21 @@ const AdminDashboard = () => {
           <div className="top-bar-left">
             <h1>{getPageTitle()}</h1>
           </div>
-          <div className="admin-info">
-            <div className="avatar">JD</div>
+          <div className="admin-info" ref={dropdownRef}>
+            <div className="avatar" onClick={toggleDropdown}>
+              <img src={adminUserIcon} alt="user" className="avatar-user-icon" />
+              <img src={adminDropdownIcon} alt="dropdown" className="avatar-dropdown-icon" />
+            </div>
+            {isDropdownOpen && (
+              <div className="avatar-dropdown-menu">
+                <button className="avatar-dropdown-item" onClick={handleSettings}>
+                  ⚙️ Settings
+                </button>
+                <button className="avatar-dropdown-item logout" onClick={handleLogout}>
+                  🚪 Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -222,7 +252,7 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  );
+  ); 
 };
 
 export default AdminDashboard;
