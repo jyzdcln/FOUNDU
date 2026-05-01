@@ -20,6 +20,7 @@
   flex-shrink: 0;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .sidebar-header {
@@ -46,6 +47,22 @@
   border-right: 1px solid #e0e0e0;
   flex: 1;
   padding: 20px 0;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #000000;
+  padding: 8px 24px;
+  margin-top: 8px;
+  text-align: left;
 }
 
 .nav-item {
@@ -56,7 +73,7 @@
   text-align: left;
   cursor: pointer;
   font-size: 0.80rem;
-  color: #000000;
+  color: #333;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
   display: flex;
@@ -92,8 +109,7 @@
   overflow-y: auto;
   background: #f3f5f9eb;
   padding: 0;
-  max-width: 1075px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .top-bar {
@@ -122,6 +138,7 @@
   font-size: 1.5rem;
   color: #2c3e50;
   margin: 0;
+  word-break: break-word;
 }
 
 .admin-info {
@@ -218,17 +235,25 @@
 .stats-container {
   display: flex;
   gap: 20px;
-  padding: 30px 0 30px 20px;
+  padding: 30px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .stat-card {
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   flex: 1;
-  max-width: 190px;
+  min-width: 180px;
+  max-width: 220px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
 }
 
 .stat-card h3 {
@@ -247,7 +272,7 @@
 }
 
 .content-area {
-  padding: 0 0 30px 20px;
+  padding: 0 30px 30px 30px;
 }
 
 .nav-icon-img {
@@ -266,10 +291,14 @@
   padding: 0;
   border-radius: 8px;
   box-shadow: none;
+  width: 100%;
 }
 
 .content-box p {
   font-family: 'Inter', sans-serif;
+  text-align: center;
+  padding: 40px;
+  color: #666;
 }
 
 .report-list {
@@ -277,6 +306,7 @@
   flex-direction: column;
   gap: 10px;
   padding-left: 0;
+  width: 100%;
 }
 
 .report-item {
@@ -285,8 +315,10 @@
   align-items: center;
   padding: 15px;
   background: #f8f9fa;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .report-item div {
@@ -312,47 +344,304 @@
   background: #2b5797;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
+  transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .verify-btn:hover {
-  background: #2980b9;
+  background: #1e3f6e;
+}
+
+@media (max-width: 1200px) {
+  .stats-container {
+    padding: 25px;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    min-width: 160px;
+  }
+  
+  .content-area {
+    padding: 0 25px 25px 25px;
+  }
 }
 
 @media (max-width: 1024px) {
-  .sidebar { width: 240px; }
-  .sidebar-header h2 { font-size: 1.1rem; }
-  .sidebar-header p { font-size: 0.75rem; }
-  .nav-item { padding: 10px 20px; font-size: 0.85rem; }
-  .stat-card { min-width: 160px; }
-  .stat-number { font-size: 1.8rem; }
+  .sidebar {
+    width: 240px;
+  }
+  
+  .sidebar-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .sidebar-header p {
+    font-size: 0.7rem;
+  }
+  
+  .sidebar-section-title {
+    padding: 6px 20px;
+    font-size: 0.65rem;
+  }
+  
+  .nav-item {
+    padding: 10px 20px;
+    font-size: 0.75rem;
+  }
+  
+  .stats-container {
+    padding: 20px;
+  }
+  
+  .stat-card {
+    min-width: 150px;
+  }
+  
+  .stat-number {
+    font-size: 1.6rem;
+  }
+  
+  .top-bar h1 {
+    font-size: 1.3rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .admin-dashboard { flex-direction: column; }
-  .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 10px 15px; }
-  .sidebar-header { padding: 10px 0; border-bottom: none; width: 100%; }
-  .sidebar-nav { display: flex; flex-wrap: wrap; padding: 10px 0; gap: 5px; }
-  .nav-item { width: auto; padding: 8px 15px; font-size: 0.8rem; border-radius: 20px; }
-  .sidebar-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; width: 100%; gap: 15px; }
-  .footer-text { text-align: right; }
-  .main-content { height: calc(100vh - auto); }
-  .top-bar { padding: 15px; }
-  .top-bar h1 { font-size: 1.2rem; }
-  .stats-container { padding: 20px 0 20px 15px; gap: 15px; }
-  .stat-card { min-width: calc(50% - 15px); padding: 15px; }
-  .stat-card h3 { font-size: 0.75rem; }
-  .stat-number { font-size: 1.5rem; }
-  .content-area { padding: 0 0 20px 15px; }
+  .admin-dashboard {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+    position: relative;
+  }
+  
+  .sidebar-header {
+    padding: 10px 0;
+    border-bottom: none;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .sidebar-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .sidebar-header p {
+    font-size: 0.65rem;
+  }
+  
+  .sidebar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    gap: 8px;
+    border-right: none;
+    justify-content: center;
+  }
+  
+  .sidebar-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .sidebar-section-title {
+    width: 100%;
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 5px;
+  }
+  
+  .nav-item {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.7rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  
+  .sidebar-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+    border-right: none;
+  }
+  
+  .footer-text {
+    text-align: center;
+  }
+  
+  .main-content {
+    height: calc(100vh - auto);
+    max-width: 100%;
+  }
+  
+  .top-bar {
+    padding: 12px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .top-bar-left h1 {
+    font-size: 1.2rem;
+  }
+  
+  .admin-info {
+    margin-top: 5px;
+  }
+  
+  .stats-container {
+    padding: 20px;
+    justify-content: center;
+  }
+  
+  .stat-card {
+    min-width: calc(50% - 15px);
+    max-width: none;
+    padding: 15px;
+  }
+  
+  .stat-number {
+    font-size: 1.4rem;
+  }
+  
+  .stat-card h3 {
+    font-size: 0.7rem;
+  }
+  
+  .content-area {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .report-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .report-item div {
+    text-align: center;
+  }
+  
+  .verify-btn {
+    width: 100%;
+    white-space: normal;
+  }
 }
 
-@media (max-width: 480px) {
-  .sidebar-header h2 { font-size: 0.9rem; }
-  .nav-item { padding: 6px 12px; font-size: 0.7rem; }
-  .footer-text { font-size: 0.6rem; }
-  .top-bar h1 { font-size: 1rem; }
-  .stat-card { min-width: 100%; }
-  .stat-number { font-size: 1.3rem; }
+@media (max-width: 576px) {
+  .sidebar-header h2 {
+    font-size: 1rem;
+  }
+  
+  .nav-item {
+    padding: 6px 12px;
+    font-size: 0.65rem;
+  }
+  
+  .sidebar-section-title {
+    font-size: 0.6rem;
+  }
+  
+  .top-bar {
+    padding: 10px 15px;
+  }
+  
+  .top-bar-left h1 {
+    font-size: 1rem;
+  }
+  
+  .avatar {
+    padding: 5px 12px;
+  }
+  
+  .avatar-user-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .avatar-dropdown-icon {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .stats-container {
+    padding: 15px;
+    gap: 12px;
+  }
+  
+  .stat-card {
+    min-width: 100%;
+    padding: 12px;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .content-area {
+    padding: 0 15px 15px 15px;
+  }
+  
+  .report-item {
+    padding: 10px;
+  }
+  
+  .report-item strong {
+    font-size: 0.85rem;
+  }
+  
+  .report-item p {
+    font-size: 0.7rem;
+  }
+  
+  .verify-btn {
+    padding: 6px 12px;
+    font-size: 0.7rem;
+  }
+  
+  .avatar-dropdown-menu {
+    min-width: 140px;
+    right: -10px;
+  }
+  
+  .avatar-dropdown-item {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .sidebar-nav {
+    gap: 5px;
+  }
+  
+  .nav-item {
+    padding: 5px 10px;
+    font-size: 0.6rem;
+  }
+  
+  .top-bar-left h1 {
+    font-size: 0.9rem;
+  }
+  
+  .stat-card h3 {
+    font-size: 0.65rem;
+  }
+  
+  .stat-number {
+    font-size: 1.1rem;
+  }
 }

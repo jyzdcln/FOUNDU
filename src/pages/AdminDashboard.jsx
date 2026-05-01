@@ -159,39 +159,49 @@ const AdminDashboard = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => handleMenuClick("dashboard")}>
-            <img src={dashboardIcon} alt="dashboard" className="nav-icon-img" />
-            Dashboard
-          </button>
-          <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => handleMenuClick("pending")}>
-            <img src={pendingIcon} alt="pending" className="nav-icon-img" />
-            Pending Reports
-          </button>
-          <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => handleMenuClick("verified")}>
-            <img src={verifiedIcon} alt="verified" className="nav-icon-img" />
-            Verified Items
-          </button>
-          <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => handleMenuClick("matched")}>
-            <img src={matchedIcon} alt="matched" className="nav-icon-img" />
-            Matched Items
-          </button>
-          <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => handleMenuClick("claimed")}>
-            <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
-            Claimed Items
-          </button>
-          <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => handleMenuClick("returned")}>
-            <img src={returnedIcon} alt="returned" className="nav-icon-img" />
-            Returned Items
-          </button>
-          
-          <button className={`nav-item ${activeMenu === "lost" ? "active" : ""}`} onClick={handleReportLost}>
-            <img src={adminLostIcon} alt="report lost" className="nav-icon-img" />
-            Report Lost Item
-          </button>
-          <button className={`nav-item ${activeMenu === "found" ? "active" : ""}`} onClick={handleReportFound}>
-            <img src={adminFoundIcon} alt="report found" className="nav-icon-img" />
-            Report Found Item
-          </button>
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">MAIN</div>
+            <button className={`nav-item ${activeMenu === "dashboard" ? "active" : ""}`} onClick={() => handleMenuClick("dashboard")}>
+              <img src={dashboardIcon} alt="dashboard" className="nav-icon-img" />
+              Dashboard
+            </button>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">REPORTS MANAGEMENT</div>
+            <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => handleMenuClick("pending")}>
+              <img src={pendingIcon} alt="pending" className="nav-icon-img" />
+              Pending Reports
+            </button>
+            <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => handleMenuClick("verified")}>
+              <img src={verifiedIcon} alt="verified" className="nav-icon-img" />
+              Verified Items
+            </button>
+            <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => handleMenuClick("matched")}>
+              <img src={matchedIcon} alt="matched" className="nav-icon-img" />
+              Matched Items
+            </button>
+            <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => handleMenuClick("claimed")}>
+              <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
+              Claimed Items
+            </button>
+            <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => handleMenuClick("returned")}>
+              <img src={returnedIcon} alt="returned" className="nav-icon-img" />
+              Returned Items
+            </button>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">ACTIONS</div>
+            <button className={`nav-item ${activeMenu === "lost" ? "active" : ""}`} onClick={handleReportLost}>
+              <img src={adminLostIcon} alt="report lost" className="nav-icon-img" />
+              Report Lost Item
+            </button>
+            <button className={`nav-item ${activeMenu === "found" ? "active" : ""}`} onClick={handleReportFound}>
+              <img src={adminFoundIcon} alt="report found" className="nav-icon-img" />
+              Report Found Item
+            </button>
+          </div>
         </nav>
 
         <div className="sidebar-footer">
@@ -252,7 +262,7 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  ); 
+  );
 };
 
 export default AdminDashboard;

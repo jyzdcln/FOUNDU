@@ -80,10 +80,12 @@ const LandingPage = () => {
         <header className="full-header">
           <div className="header-content">
             <div className="logo">FoundU</div>
-            <div className="header-actions">
+            <div className="nav-center">
               <span className="lang">Home</span>
-                <span className="lang">About</span>
-                  <span className="lang">Contact</span>
+              <span className="lang">About</span>
+              <span className="lang">Contact</span>
+            </div>
+            <div className="header-actions">
               <button className="login-btn" onClick={handleLoginClick}>
                 Log In
               </button>

@@ -54,6 +54,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 5%;
+  position: relative;
 }
 
 .logo {
@@ -61,12 +62,23 @@ body {
   color: #0f0f0f;
   white-space: nowrap;
   font-size: clamp(1rem, 2vw, 1.5rem);
+  flex-shrink: 0;
+}
+
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: clamp(1rem, 2vw, 2rem);
+  flex-shrink: 0;
 }
 
 .lang {
@@ -423,6 +435,20 @@ form {
     justify-content: center;
     gap: 1rem;
   }
+  
+  .nav-center {
+    position: static;
+    transform: none;
+    order: 2;
+  }
+  
+  .logo {
+    order: 1;
+  }
+  
+  .header-actions {
+    order: 3;
+  }
 }
 
 @media (max-width: 600px) {
@@ -444,5 +470,10 @@ form {
   .login-btn {
     width: 100%;
     max-width: 200px;
+  }
+  
+  .nav-center {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
