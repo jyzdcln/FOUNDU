@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/loginPopup.css";
 
 console.log("LoginPopup loaded");
 
@@ -10,8 +11,8 @@ const LoginPopup = ({
   handleShowAdminForm,
   handleBackToOptions,
   handleAdminSubmit,
-  email,
-  setEmail,
+  username,
+  setUsername,
   password,
   setPassword,
   error,
@@ -56,11 +57,12 @@ const LoginPopup = ({
           ) : (
             <form onSubmit={handleAdminSubmit}>
               <div className="form-group">
-                <label>Email</label>
+                <label>Username</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin"
                   required
                 />
               </div>
@@ -71,6 +73,7 @@ const LoginPopup = ({
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
                   required
                 />
               </div>

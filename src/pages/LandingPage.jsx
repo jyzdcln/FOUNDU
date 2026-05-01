@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginPopup from "../components/LoginPopup";
 import "../styles/global.css";
+import founduLogo from "../assets/icons/foundulogo-icon.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const LandingPage = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showAdminForm, setShowAdminForm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -19,7 +20,7 @@ const LandingPage = () => {
     setShowLoginPopup(true);
     setShowAdminForm(false);
     setIsClosing(false);
-    setEmail("");
+    setUsername("");
     setPassword("");
     setError("");
     setRememberMe(false);
@@ -32,7 +33,7 @@ const LandingPage = () => {
       setShowLoginPopup(false);
       setShowAdminForm(false);
       setIsClosing(false);
-      setEmail("");
+      setUsername("");
       setPassword("");
       setError("");
       setRememberMe(false);
@@ -59,27 +60,36 @@ const LandingPage = () => {
   const handleAdminSubmit = (e) => {
     e.preventDefault();
 
-    if (email === "admin@account.com" && password === "admin123") {
+    if (username === "admin" && password === "admin123") {
       if (rememberMe) {
-        localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("rememberedUsername", username);
       } else {
-        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedUsername");
       }
       alert("Admin login successful!");
       handleClosePopup();
       navigate("/admin-dashboard");
     } else {
-      setError("Invalid email or password");
+      setError("Invalid username or password");
     }
+  };
+
+  const handleLostClick = () => {
+    alert("Report Lost Item - Coming soon!");
+  };
+
+  const handleFoundClick = () => {
+    alert("Report Found Item - Coming soon!");
   };
 
   return (
     <>
-      {/* HEADER */}
       <div className="full-width-wrapper">
         <header className="full-header">
           <div className="header-content">
-            <div className="logo">FoundU</div>
+            <div className="logo">
+              <img src={founduLogo} alt="FoundU" className="logo-img" />
+            </div>
             <div className="nav-center">
               <span className="lang">Home</span>
               <span className="lang">About</span>
@@ -87,11 +97,32 @@ const LandingPage = () => {
             </div>
             <div className="header-actions">
               <button className="login-btn" onClick={handleLoginClick}>
-                Log In
+                Login
               </button>
             </div>
           </div>
         </header>
+
+        <div className="hero-section">
+          <h1 className="hero-title">
+            Where lost belongings find
+            <br />
+            their way home
+          </h1>
+          <p className="hero-subtitle">
+            A lost & found where every item matters.
+            <br />
+            Report what's missing. Post what's found.
+          </p>
+          <div className="hero-buttons">
+            <button className="hero-btn found-btn" onClick={handleFoundClick}>
+              I've found something
+            </button>
+            <button className="hero-btn lost-btn" onClick={handleLostClick}>
+              I've lost something
+            </button>
+          </div>
+        </div>
       </div>
 
       {showLoginPopup && (
@@ -102,8 +133,8 @@ const LandingPage = () => {
           handleShowAdminForm={handleShowAdminForm}
           handleBackToOptions={handleBackToOptions}
           handleAdminSubmit={handleAdminSubmit}
-          email={email}
-          setEmail={setEmail}
+          username={username}
+          setUsername={setUsername}
           password={password}
           setPassword={setPassword}
           error={error}
