@@ -1,13 +1,13 @@
 import React, { useState, useRef } from "react";
-import "./ReportLostItem.css";
-import reportLostIcon from "../../assets/icons/report-lost-icon.png";
+import "./ReportFoundItem.css";
+import reportFoundIcon from "../../assets/icons/report-found-icon.png";
 import { saveReport } from "../../services/reportService";
 
-const ReportLostItem = ({ onClose }) => {
+const ReportFoundItem = ({ onClose }) => {
   const [formData, setFormData] = useState({
     itemTitle: "",
     category: "",
-    dateLost: "",
+    dateFound: "",
     location: "",
     description: "",
     photo: null
@@ -37,7 +37,7 @@ const ReportLostItem = ({ onClose }) => {
     setFormData({
       itemTitle: "",
       category: "",
-      dateLost: "",
+      dateFound: "",
       location: "",
       description: "",
       photo: null
@@ -54,38 +54,38 @@ const ReportLostItem = ({ onClose }) => {
     e.preventDefault();
     
     const reportData = {
-      type: "lost",
+      type: "found",
       itemTitle: formData.itemTitle,
       category: formData.category,
-      date: formData.dateLost,
+      date: formData.dateFound,
       location: formData.location,
       description: formData.description,
       photo: formData.photo
     };
     
     saveReport(reportData);
-    alert(`Report Lost Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
+    alert(`Report Found Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
     resetForm();
     scrollToTop();
   };
 
   return (
-    <div className="reportlost-page" ref={formTopRef}>
-      <div className="reportlost-form-container">
-        <div className="reportlost-form-header">
-          <img src={reportLostIcon} alt="report icon" className="reportlost-header-icon" />
-          <div className="reportlost-header-content">
-            <h1 className="reportlost-title">Report Lost Item</h1>
-            <div className="reportlost-subtitle-row">
-              <span className="reportlost-subtitle-label">REPORTING AS STUDENT</span>
-              <p className="reportlost-subtitle-text">Helping the community reconnect.</p>
+    <div className="reportfound-page" ref={formTopRef}>
+      <div className="reportfound-form-container">
+        <div className="reportfound-form-header">
+          <img src={reportFoundIcon} alt="report icon" className="reportfound-header-icon" />
+          <div className="reportfound-header-content">
+            <h1 className="reportfound-title">Report Found Item</h1>
+            <div className="reportfound-subtitle-row">
+              <span className="reportfound-subtitle-label">REPORTING AS STUDENT</span>
+              <p className="reportfound-subtitle-text">Helping the community reconnect.</p>
             </div>
           </div>
         </div>
 
-        <div className="reportlost-form-body">
+        <div className="reportfound-form-body">
           <form onSubmit={handleSubmit}>
-            <div className="reportlost-form-group">
+            <div className="reportfound-form-group">
               <label>ITEM TITLE</label>
               <input
                 type="text"
@@ -97,8 +97,8 @@ const ReportLostItem = ({ onClose }) => {
               />
             </div>
 
-            <div className="reportlost-form-row">
-              <div className="reportlost-form-group">
+            <div className="reportfound-form-row">
+              <div className="reportfound-form-group">
                 <label>CATEGORY</label>
                 <select name="category" value={formData.category} onChange={handleInputChange} required>
                   <option value="">Select Category</option>
@@ -110,13 +110,13 @@ const ReportLostItem = ({ onClose }) => {
                   <option value="Others">Others</option>
                 </select>
               </div>
-              <div className="reportlost-form-group">
-                <label>DATE LOST</label>
-                <input type="date" name="dateLost" value={formData.dateLost} onChange={handleInputChange} required />
+              <div className="reportfound-form-group">
+                <label>DATE FOUND</label>
+                <input type="date" name="dateFound" value={formData.dateFound} onChange={handleInputChange} required />
               </div>
             </div>
 
-            <div className="reportlost-form-group">
+            <div className="reportfound-form-group">
               <label>LOCATION</label>
               <input
                 type="text"
@@ -128,7 +128,7 @@ const ReportLostItem = ({ onClose }) => {
               />
             </div>
 
-            <div className="reportlost-form-group">
+            <div className="reportfound-form-group">
               <label>DETAILED DESCRIPTION</label>
               <textarea
                 name="description"
@@ -140,30 +140,30 @@ const ReportLostItem = ({ onClose }) => {
               ></textarea>
             </div>
 
-            <div className="reportlost-form-group">
+            <div className="reportfound-form-group">
               <label>UPLOAD PHOTO (OPTIONAL)</label>
-              <div className="reportlost-photo-upload-area" onClick={() => document.getElementById('reportlost-photoInput').click()}>
+              <div className="reportfound-photo-upload-area" onClick={() => document.getElementById('reportfound-photoInput').click()}>
                 <input
                   type="file"
-                  id="reportlost-photoInput"
+                  id="reportfound-photoInput"
                   accept="image/*"
                   onChange={handlePhotoChange}
                   style={{ display: 'none' }}
                 />
-                <div className="reportlost-upload-icon"></div>
+                <div className="reportfound-upload-icon"></div>
                 <p>Click or drop image here</p>
-                <span className="reportlost-upload-hint">Max file size: 5 MB</span>
+                <span className="reportfound-upload-hint">Max file size: 5 MB</span>
                 {formData.photo && (
-                  <div className="reportlost-selected-file">
+                  <div className="reportfound-selected-file">
                     ✓ Photo uploaded
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="reportlost-form-buttons">
-              <button type="submit" className="reportlost-submit-btn">UPLOAD REPORT</button>
-              <button type="button" className="reportlost-cancel-btn" onClick={onClose}>Cancel</button>
+            <div className="reportfound-form-buttons">
+              <button type="submit" className="reportfound-submit-btn">UPLOAD REPORT</button>
+              <button type="button" className="reportfound-cancel-btn" onClick={onClose}>Cancel</button>
             </div>
           </form>
         </div>
@@ -172,4 +172,4 @@ const ReportLostItem = ({ onClose }) => {
   );
 };
 
-export default ReportLostItem;
+export default ReportFoundItem;

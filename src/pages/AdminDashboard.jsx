@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import ReportLostItem from "../components/student/ReportLostItem";
+import ReportFoundItem from "../components/student/ReportFoundItem";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
 import pendingIcon from "../assets/icons/pending-icon.png";
@@ -14,6 +16,7 @@ import adminUserIcon from "../assets/icons/admin-user-icon.png";
 import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState("dashboard");
   const [pendingCount, setPendingCount] = useState(0);
   const [pendingReports, setPendingReports] = useState([]);
@@ -23,7 +26,10 @@ const AdminDashboard = () => {
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    alert("Logged out!");
+    localStorage.removeItem("rememberedUsername");
+    localStorage.removeItem("user");
+    alert("Logged out successfully!");
+    navigate("/");
   };
 
   const handleSettings = () => {
@@ -89,11 +95,7 @@ const AdminDashboard = () => {
       if (reportType === "lost") {
         return <ReportLostItem onClose={handleCloseForm} />;
       } else {
-        return (
-          <div className="content-box">
-            <p>Coming soon... Report Found Item</p>
-          </div>
-        );
+        return <ReportFoundItem onClose={handleCloseForm} />;
       }
     }
     
@@ -222,10 +224,10 @@ const AdminDashboard = () => {
             {isDropdownOpen && (
               <div className="avatar-dropdown-menu">
                 <button className="avatar-dropdown-item" onClick={handleSettings}>
-                  ⚙️ Settings
+                  Settings
                 </button>
                 <button className="avatar-dropdown-item logout" onClick={handleLogout}>
-                  🚪 Logout
+                  Logout
                 </button>
               </div>
             )}

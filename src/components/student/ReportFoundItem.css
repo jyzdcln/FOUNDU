@@ -1,30 +1,11 @@
-.reportlost-page {
+.reportfound-page {
   max-width: 700px;
   margin: 0 auto;
   width: 100%;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-back-arrow {
-  background: none;
-  border: none;
-  font-size: 0.9rem;
-  color: #2b5797;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 16px;
-  font-weight: 500;
-  display: block;
-  text-align: left;
-  width: fit-content;
-  font-family: 'Inter', sans-serif;
-}
-
-.reportlost-back-arrow:hover {
-  text-decoration: underline;
-}
-
-.reportlost-form-container {
+.reportfound-form-container {
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -33,7 +14,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-header {
+.reportfound-form-header {
   background: #2b5797;
   padding: 42px 40px;
   color: white;
@@ -43,9 +24,9 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-header-icon {
-  width: 40px;
-  height: 40px;
+.reportfound-header-icon {
+  width: 64px;
+  height: 60px;
   object-fit: contain;
   display: flex;
   align-items: center;
@@ -53,12 +34,7 @@
   background: none;
 }
 
-.reportlost-header-icon {
-  width: 64px;
-  height: 60px;
-}
-
-.reportlost-title {
+.reportfound-title {
   text-align: left;
   font-size: 1.5rem;
   font-weight: 600;
@@ -67,7 +43,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-subtitle-row {
+.reportfound-subtitle-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -75,7 +51,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-subtitle-label {
+.reportfound-subtitle-label {
   background-color: white;
   font-size: 0.5rem;
   font-weight: bold;
@@ -87,25 +63,25 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-subtitle-text {
+.reportfound-subtitle-text {
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-body {
+.reportfound-form-body {
   padding: 32px;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-group {
+.reportfound-form-group {
   margin-bottom: 24px;
   text-align: left;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-group label {
+.reportfound-form-group label {
   display: block;
   font-weight: 600;
   font-size: 0.75rem;
@@ -116,9 +92,9 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-group input,
-.reportlost-form-group select,
-.reportlost-form-group textarea {
+.reportfound-form-group input,
+.reportfound-form-group select,
+.reportfound-form-group textarea {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid #e0e0e0;
@@ -129,26 +105,26 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-group input:focus,
-.reportlost-form-group select:focus,
-.reportlost-form-group textarea:focus {
+.reportfound-form-group input:focus,
+.reportfound-form-group select:focus,
+.reportfound-form-group textarea:focus {
   outline: none;
-  border-color: black;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+  border-color: #2b5797;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.1);
 }
 
-.reportlost-form-row {
+.reportfound-form-row {
   display: flex;
   gap: 20px;
   text-align: left;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-row .reportlost-form-group {
+.reportfound-form-row .reportfound-form-group {
   flex: 1;
 }
 
-.reportlost-photo-upload-area {
+.reportfound-photo-upload-area {
   border: 1px dashed #ccc;
   border-radius: 12px;
   padding: 24px;
@@ -159,30 +135,30 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-photo-upload-area:hover {
-  border-color: black;
+.reportfound-photo-upload-area:hover {
+  border-color: #2b5797;
   background: #f1f8e9;
 }
 
-.reportlost-upload-icon {
+.reportfound-upload-icon {
   font-size: 40px;
   margin-bottom: 8px;
 }
 
-.reportlost-photo-upload-area p {
+.reportfound-photo-upload-area p {
   font-size: 0.85rem;
   color: #666;
   margin: 4px 0;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-upload-hint {
+.reportfound-upload-hint {
   font-size: 0.7rem;
   color: #999;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-selected-file {
+.reportfound-selected-file {
   margin-top: 12px;
   padding: 8px;
   background: #e8f5e9;
@@ -192,14 +168,14 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-form-buttons {
+.reportfound-form-buttons {
   display: flex;
   gap: 16px;
   margin-top: 24px;
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-submit-btn {
+.reportfound-submit-btn {
   flex: 1;
   background: #2b5797;
   color: white;
@@ -213,11 +189,11 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-submit-btn:hover {
+.reportfound-submit-btn:hover {
   background: #2b5797;
 }
 
-.reportlost-cancel-btn {
+.reportfound-cancel-btn {
   flex: 0.3;
   background: white;
   color: #666;
@@ -231,46 +207,46 @@
   font-family: 'Inter', sans-serif;
 }
 
-.reportlost-cancel-btn:hover {
+.reportfound-cancel-btn:hover {
   background: #f8f9fa;
   border-color: #dc3545;
   color: #dc3545;
 }
 
 @media (max-width: 768px) {
-  .reportlost-page {
+  .reportfound-page {
     margin: 0 16px;
   }
   
-  .reportlost-form-header {
+  .reportfound-form-header {
     padding: 20px;
     flex-wrap: wrap;
   }
   
-  .reportlost-header-icon {
+  .reportfound-header-icon {
     font-size: 1.5rem;
   }
   
-  .reportlost-title {
+  .reportfound-title {
     font-size: 1.2rem;
   }
   
-  .reportlost-subtitle-row {
+  .reportfound-subtitle-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
   
-  .reportlost-form-body {
+  .reportfound-form-body {
     padding: 20px;
   }
   
-  .reportlost-form-row {
+  .reportfound-form-row {
     flex-direction: column;
     gap: 0;
   }
   
-  .reportlost-form-buttons {
+  .reportfound-form-buttons {
     flex-direction: column;
   }
 }
