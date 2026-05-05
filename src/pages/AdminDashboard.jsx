@@ -256,7 +256,7 @@ const AdminDashboard = () => {
             <div className="stat-card">
               <h3>Verified Items</h3>
               <p className="stat-number">0</p>
-            </div>
+            </div> 
             <div className="stat-card">
               <h3>Matched Items</h3>
               <p className="stat-number">0</p>
