@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./StudentDashboard.css";
 import { getReports } from "../services/reportService";
+import founduLogo from "../assets/icons/foundulogo-icon.png";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const StudentDashboard = () => {
     loadReports();
   }, []);
 
-  const loadReports = () => {
-    const allReports = getReports();
+  const loadReports = async () => {
+    const allReports = await getReports();
     setReports(allReports);
   };
 
@@ -39,6 +40,7 @@ const StudentDashboard = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "Invalid Date";
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
   };
@@ -47,7 +49,9 @@ const StudentDashboard = () => {
     <div className="student-dashboard-container">
       <header className="student-full-header">
         <div className="student-header-content">
-          <div className="student-logo">FoundU</div>
+          <div className="student-logo">
+            <img src={founduLogo} alt="FoundU" className="student-logo-img" />
+          </div>
           <div className="student-header-actions">
             <span className="student-lang" onClick={() => setFilter("all")}>Dashboard</span>
             <button className="student-logout-top-btn" onClick={handleLogout}>
@@ -85,16 +89,16 @@ const StudentDashboard = () => {
                   {report.type === "lost" ? "LOST" : "FOUND"}
                 </div>
                 <div className="report-content">
-                  {report.photo && (
+                  {report.photo_url && (
                     <div className="report-photo">
-                      <img src={report.photo} alt={report.itemTitle} />
+                      <img src={report.photo_url} alt={report.title} />
                     </div>
                   )}
                   <div className="report-info">
-                    <h3 className="report-title">{report.itemTitle}</h3>
+                    <h3 className="report-title">{report.title}</h3>
                     <p className="report-category">Category: {report.category}</p>
                     <p className="report-location">{report.location}</p>
-                    <p className="report-date">Reported: {formatDate(report.createdAt)}</p>
+                    <p className="report-date">Reported: {formatDate(report.created_at)}</p>
                     <p className="report-date">Date {report.type === "lost" ? "Lost" : "Found"}: {formatDate(report.date)}</p>
                     <p className="report-description">{report.description}</p>
                     <div className="report-status">

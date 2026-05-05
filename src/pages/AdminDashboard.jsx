@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import ReportLostItem from "../components/student/ReportLostItem";
 import ReportFoundItem from "../components/student/ReportFoundItem";
+import { getReports, updateReportStatus } from "../services/reportService";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
 import pendingIcon from "../assets/icons/pending-icon.png";
 import verifiedIcon from "../assets/icons/verified-icon.png";
 import matchedIcon from "../assets/icons/matched-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
-import returnedIcon from "../assets/icons/returned-icon.png";
 import adminLostIcon from "../assets/icons/admin-lost-icon.png";
 import adminFoundIcon from "../assets/icons/admin-found-icon.png";
 import adminUserIcon from "../assets/icons/admin-user-icon.png";
@@ -75,6 +75,23 @@ const AdminDashboard = () => {
     };
   }, []);
 
+  useEffect(() => {
+    loadPendingReports();
+  }, []);
+
+  const loadPendingReports = async () => {
+    const allReports = await getReports();
+    const pending = allReports.filter(r => r.status === "pending");
+    setPendingReports(pending);
+    setPendingCount(pending.length);
+  };
+
+  const handleVerify = async (id) => {
+    await updateReportStatus(id, "verified");
+    loadPendingReports();
+    alert("Report verified!");
+  };
+
   const getPageTitle = () => {
     if (showReportForm) {
       return reportType === "lost" ? "Report Lost Item" : "Report Found Item";
@@ -85,7 +102,6 @@ const AdminDashboard = () => {
       case "verified": return "Verified Items";
       case "matched": return "Matched Items";
       case "claimed": return "Claimed Items";
-      case "returned": return "Returned Items";
       default: return "Dashboard";
     }
   };
@@ -112,11 +128,18 @@ const AdminDashboard = () => {
                 {pendingReports.map((report) => (
                   <div key={report.id} className="report-item">
                     <div>
-                      <strong>{report.name}</strong>
-                      <p>Found at: {report.location}</p>
-                      <p>Date: {report.date}</p>
+                      <strong>{report.title}</strong>
+                      <p>Type: {report.type.toUpperCase()}</p>
+                      <p>Category: {report.category}</p>
+                      <p>Location: {report.location}</p>
+                      <p>Reported by: {report.users?.name || "Student"}</p>
                     </div>
-                    <button className="verify-btn">Verify</button>
+                    <button 
+                      className="verify-btn"
+                      onClick={() => handleVerify(report.id)}
+                    >
+                      Verify
+                    </button>
                   </div>
                 ))}
               </div>
@@ -139,12 +162,6 @@ const AdminDashboard = () => {
         return (
           <div className="content-box">
             <p>Coming soon... (Function 4)</p>
-          </div>
-        );
-      case "returned":
-        return (
-          <div className="content-box">
-            <p>Coming soon... (Function 5)</p>
           </div>
         );
       default:
@@ -186,10 +203,6 @@ const AdminDashboard = () => {
             <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => handleMenuClick("claimed")}>
               <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
               Claimed Items
-            </button>
-            <button className={`nav-item ${activeMenu === "returned" ? "active" : ""}`} onClick={() => handleMenuClick("returned")}>
-              <img src={returnedIcon} alt="returned" className="nav-icon-img" />
-              Returned Items
             </button>
           </div>
 
@@ -250,11 +263,7 @@ const AdminDashboard = () => {
             </div>
             <div className="stat-card">
               <h3>Claimed Items</h3>
-              <p className="stat-number">1</p>
-            </div>
-            <div className="stat-card">
-              <h3>Returned Items</h3>
-              <p className="stat-number">1</p>
+              <p className="stat-number">0</p>
             </div>
           </div>
         )}

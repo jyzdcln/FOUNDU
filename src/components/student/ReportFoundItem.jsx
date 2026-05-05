@@ -12,7 +12,6 @@ const ReportFoundItem = ({ onClose }) => {
     description: "",
     photo: null
   });
-  
   const formTopRef = useRef(null);
 
   const handleInputChange = (e) => {
@@ -50,7 +49,7 @@ const ReportFoundItem = ({ onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const reportData = {
@@ -63,10 +62,15 @@ const ReportFoundItem = ({ onClose }) => {
       photo: formData.photo
     };
     
-    saveReport(reportData);
-    alert(`Report Found Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
-    resetForm();
-    scrollToTop();
+    const result = await saveReport(reportData);
+    
+    if (result) {
+      alert(`Report Found Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
+      resetForm();
+      scrollToTop();
+    } else {
+      alert("Error saving report. Please try again.");
+    }
   };
 
   return (
@@ -77,7 +81,7 @@ const ReportFoundItem = ({ onClose }) => {
           <div className="reportfound-header-content">
             <h1 className="reportfound-title">Report Found Item</h1>
             <div className="reportfound-subtitle-row">
-              <span className="reportfound-subtitle-label">REPORTING AS STUDENT</span>
+              <span className="reportfound-subtitle-label">REPORTING AS ADMIN</span>
               <p className="reportfound-subtitle-text">Helping the community reconnect.</p>
             </div>
           </div>

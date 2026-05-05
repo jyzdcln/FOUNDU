@@ -36,6 +36,14 @@
   color: #0f0f0f;
   white-space: nowrap;
   font-size: clamp(1rem, 2vw, 1.5rem);
+  display: flex;
+  align-items: center;
+}
+
+.student-logo-img {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
 }
 
 .student-header-actions {

@@ -6,23 +6,29 @@
 
 .admin-dashboard {
   display: flex;
-  flex-direction: row;
   min-height: 100vh;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
   background: #f5f5f5;
 }
 
 .sidebar {
+  border-radius: 40px;
   width: 280px;
   background: rgba(245, 245, 245, 0.95);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
   height: 100vh;
   position: sticky;
   top: 0;
   overflow-y: auto;
+  border-right: #999 solid 1px;
+  border-top: #999 solid 1px;
+  border-bottom: #999 solid 1px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-header {
@@ -32,7 +38,6 @@
 .sidebar-header h2 {
   font-size: 1.4rem;
   color: #2b5797;
-  
 }
 
 .sidebar-header p {
@@ -44,7 +49,12 @@
   flex: 1;
   padding: 25px 0;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-section {
@@ -102,7 +112,12 @@
   flex-direction: column;
   overflow-y: auto;
   background: #f3f5f9eb;
-  min-width: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 .top-bar {
@@ -123,7 +138,6 @@
   font-size: 1.5rem;
   color: #2c3e50;
   margin: 0;
-  word-break: break-word;
 }
 
 .admin-info {
@@ -180,9 +194,6 @@
   text-align: left;
   cursor: pointer;
   font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   color: #333;
 }
 
@@ -226,6 +237,13 @@
 
 .content-area {
   padding: 0 30px 30px 30px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.content-area::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-icon-img {
@@ -288,73 +306,6 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1200px) {
-  .stats-container {
-    padding: 25px;
-    gap: 15px;
-  }
-  
-  .stat-card {
-    min-width: 150px;
-  }
-  
-  .content-area {
-    padding: 0 25px 25px 25px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .sidebar {
-    width: 250px;
-  }
-  
-  .sidebar-header h2 {
-    font-size: 1.2rem;
-  }
-  
-  .nav-item {
-    padding: 8px 20px;
-    font-size: 0.75rem;
-  }
-  
-  .sidebar-section-title {
-    padding: 6px 20px;
-    font-size: 0.65rem;
-    text-align: left;
-  }
-  
-  .stat-card {
-    min-width: 140px;
-  }
-  
-  .stat-number {
-    font-size: 1.6rem;
-  }
-  
-  .top-bar h1 {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 900px) {
-  .sidebar {
-    width: 230px;
-  }
-  
-  .stats-container {
-    padding: 20px;
-  }
-  
-  .stat-card {
-    min-width: 130px;
-    padding: 15px;
-  }
-  
-  .stat-number {
-    font-size: 1.4rem;
-  }
-}
-
 @media (max-width: 768px) {
   .sidebar {
     width: 200px;
@@ -381,7 +332,6 @@
   .sidebar-section-title {
     padding: 5px 15px;
     font-size: 0.6rem;
-    text-align: left;
   }
   
   .nav-icon-img {
@@ -399,16 +349,6 @@
   
   .avatar {
     padding: 6px 12px;
-  }
-  
-  .avatar-user-icon {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .avatar-dropdown-icon {
-    width: 10px;
-    height: 10px;
   }
   
   .stats-container {
@@ -435,50 +375,12 @@
 }
 
 @media (max-width: 600px) {
-  .sidebar {
-    width: 180px;
-  }
-  
-  .sidebar-header h2 {
-    font-size: 0.9rem;
-  }
-  
-  .nav-item {
-    padding: 6px 12px;
-    font-size: 0.65rem;
-  }
-  
-  .sidebar-section-title {
-    padding: 4px 12px;
-    font-size: 0.55rem;
-    text-align: left;
-  }
-  
-  .nav-icon-img {
-    width: 14px;
-    height: 14px;
-  }
-  
-  .top-bar {
-    flex-direction: column;
-    text-align: center;
-    padding: 10px 15px;
-  }
-  
-  .top-bar-left h1 {
-    font-size: 1rem;
-  }
-  
   .stats-container {
     flex-direction: column;
   }
   
   .stat-card {
     min-width: 100%;
-  }
-  
-  .stat-number {
-    font-size: 1.3rem;
   }
   
   .report-item {
@@ -488,7 +390,6 @@
   
   .verify-btn {
     width: 100%;
-    white-space: normal;
   }
 }
 
@@ -508,40 +409,9 @@
   
   .sidebar-section-title {
     font-size: 0.5rem;
-    text-align: left;
-  }
-  
-  .top-bar-left h1 {
-    font-size: 0.9rem;
-  }
-  
-  .stat-card {
-    padding: 10px;
-  }
-  
-  .stat-card h3 {
-    font-size: 0.65rem;
-  }
-  
-  .stat-number {
-    font-size: 1.1rem;
-  }
-  
-  .report-item strong {
-    font-size: 0.85rem;
-  }
-  
-  .report-item p {
-    font-size: 0.65rem;
   }
   
   .avatar-dropdown-menu {
     min-width: 130px;
-    right: -10px;
-  }
-  
-  .avatar-dropdown-item {
-    padding: 8px 12px;
-    font-size: 0.7rem;
   }
 }

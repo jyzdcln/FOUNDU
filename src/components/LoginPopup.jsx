@@ -1,59 +1,87 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/loginPopup.css";
-
-console.log("LoginPopup loaded");
+import "../styles/LoginPopup.css";
 
 const LoginPopup = ({
   isClosing,
   handleClosePopup,
   showAdminForm,
+  showOffice365Form,
   handleShowAdminForm,
+  handleShowOffice365Form,
   handleBackToOptions,
   handleAdminSubmit,
+  handleOffice365Submit,
   username,
   setUsername,
   password,
   setPassword,
+  office365Email,
+  setOffice365Email,
+  office365Password,
+  setOffice365Password,
   error,
   rememberMe,
-  setRememberMe,
-  isSwitching,
+  setRememberMe
 }) => {
-  const navigate = useNavigate();
-
-  const handleStudentLogin = () => {
-    handleClosePopup();
-    navigate("/student");
-  };
-
   return (
-    <div
-      className={`popup-overlay ${isClosing ? "closing" : ""}`}
-      onClick={handleClosePopup}
-    >
-      <div
-        className={`popup-container ${isClosing ? "closing" : ""}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className={`popup-overlay ${isClosing ? "closing" : ""}`}>
+      <div className="popup-container">
         <div className="popup-header">
-          <h2>Log in</h2>
-          <button className="close-btn" onClick={handleClosePopup}>
-            ×
-          </button>
+          <h2>
+            {showOffice365Form 
+              ? "Office 365 Login" 
+              : showAdminForm 
+                ? "Admin Login" 
+                : "Login to FoundU"}
+          </h2>
+          <button className="close-btn" onClick={handleClosePopup}>×</button>
         </div>
-
-        <div className={`form-switch-wrapper ${isSwitching ? "switching" : ""}`}>
-          {!showAdminForm ? (
+        
+        <div className="form-switch-wrapper">
+          {!showAdminForm && !showOffice365Form ? (
             <div className="login-options">
-              <button className="office365-btn" onClick={handleStudentLogin}>
-                Log in with Office 365
+              <button 
+                className="office365-btn"
+                onClick={handleShowOffice365Form}
+              >
+                <span className="office-icon"></span>
+                Login with Office 365
               </button>
-
-              <button className="admin-link" onClick={handleShowAdminForm}>
-                Admin log in
+              <button 
+                className="admin-link"
+                onClick={handleShowAdminForm}
+              >
+                Admin Login
               </button>
             </div>
+          ) : showOffice365Form ? (
+            <form onSubmit={handleOffice365Submit}>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={office365Email}
+                  onChange={(e) => setOffice365Email(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={office365Password}
+                  onChange={(e) => setOffice365Password(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              {error && <div className="error-message">{error}</div>}
+              <button type="submit" className="submit-btn">Login</button>
+              <button type="button" className="back-btn" onClick={handleBackToOptions}>
+                Back
+              </button>
+            </form>
           ) : (
             <form onSubmit={handleAdminSubmit}>
               <div className="form-group">
@@ -62,22 +90,20 @@ const LoginPopup = ({
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin"
+                  placeholder="Enter username"
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label>Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Enter password"
                   required
                 />
               </div>
-
               <div className="form-options">
                 <label className="remember-checkbox">
                   <input
@@ -85,26 +111,13 @@ const LoginPopup = ({
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
-                  <span>Remember me</span>
+                  Remember me
                 </label>
-
-                <button type="button" className="forgot-password-link">
-                  Forgot password?
-                </button>
               </div>
-
               {error && <div className="error-message">{error}</div>}
-
-              <button type="submit" className="submit-btn">
-                Log In
-              </button>
-
-              <button
-                type="button"
-                className="back-btn"
-                onClick={handleBackToOptions}
-              >
-                Back to Options
+              <button type="submit" className="submit-btn">Login</button>
+              <button type="button" className="back-btn" onClick={handleBackToOptions}>
+                Back
               </button>
             </form>
           )}

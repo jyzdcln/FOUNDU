@@ -12,7 +12,6 @@ const ReportLostItem = ({ onClose }) => {
     description: "",
     photo: null
   });
-  
   const formTopRef = useRef(null);
 
   const handleInputChange = (e) => {
@@ -50,7 +49,7 @@ const ReportLostItem = ({ onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const reportData = {
@@ -63,10 +62,15 @@ const ReportLostItem = ({ onClose }) => {
       photo: formData.photo
     };
     
-    saveReport(reportData);
-    alert(`Report Lost Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
-    resetForm();
-    scrollToTop();
+    const result = await saveReport(reportData);
+    
+    if (result) {
+      alert(`Report Lost Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
+      resetForm();
+      scrollToTop();
+    } else {
+      alert("Error saving report. Please try again.");
+    }
   };
 
   return (
@@ -77,7 +81,7 @@ const ReportLostItem = ({ onClose }) => {
           <div className="reportlost-header-content">
             <h1 className="reportlost-title">Report Lost Item</h1>
             <div className="reportlost-subtitle-row">
-              <span className="reportlost-subtitle-label">REPORTING AS STUDENT</span>
+              <span className="reportlost-subtitle-label">REPORTING AS ADMIN</span>
               <p className="reportlost-subtitle-text">Helping the community reconnect.</p>
             </div>
           </div>

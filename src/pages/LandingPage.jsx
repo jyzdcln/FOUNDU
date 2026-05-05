@@ -1,30 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginPopup from "../components/LoginPopup";
 import "../styles/global.css";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
+import { supabase } from "../services/supabase";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showAdminForm, setShowAdminForm] = useState(false);
+  const [showOffice365Form, setShowOffice365Form] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [office365Email, setOffice365Email] = useState("");
+  const [office365Password, setOffice365Password] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [isSwitching, setIsSwitching] = useState(false);
+
+  useEffect(() => {
+    if (showLoginPopup) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showLoginPopup]);
 
   const handleLoginClick = () => {
     setShowLoginPopup(true);
     setShowAdminForm(false);
+    setShowOffice365Form(false);
     setIsClosing(false);
     setUsername("");
     setPassword("");
+    setOffice365Email("");
+    setOffice365Password("");
     setError("");
     setRememberMe(false);
-    setIsSwitching(false);
   };
 
   const handleClosePopup = () => {
@@ -32,45 +48,81 @@ const LandingPage = () => {
     setTimeout(() => {
       setShowLoginPopup(false);
       setShowAdminForm(false);
+      setShowOffice365Form(false);
       setIsClosing(false);
       setUsername("");
       setPassword("");
+      setOffice365Email("");
+      setOffice365Password("");
       setError("");
       setRememberMe(false);
-      setIsSwitching(false);
     }, 300);
   };
 
+  const handleOffice365Submit = async (e) => {
+    e.preventDefault();
+    
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', office365Email)
+      .single();
+    
+    if (error || !data) {
+      setError("Invalid email or password");
+    } else {
+      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("isLoggedIn", "true");
+      handleClosePopup();
+      
+      if (data.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
+    }
+  };
+
+  const handleShowOffice365Form = () => {
+    setShowOffice365Form(true);
+    setShowAdminForm(false);
+    setError("");
+  };
+
   const handleShowAdminForm = () => {
-    setIsSwitching(true);
-    setTimeout(() => {
-      setShowAdminForm(true);
-      setIsSwitching(false);
-    }, 200);
+    setShowAdminForm(true);
+    setShowOffice365Form(false);
+    setError("");
   };
 
   const handleBackToOptions = () => {
-    setIsSwitching(true);
-    setTimeout(() => {
-      setShowAdminForm(false);
-      setIsSwitching(false);
-    }, 200);
+    setShowAdminForm(false);
+    setShowOffice365Form(false);
+    setError("");
+    setOffice365Email("");
+    setOffice365Password("");
+    setUsername("");
+    setPassword("");
   };
 
-  const handleAdminSubmit = (e) => {
+  const handleAdminSubmit = async (e) => {
     e.preventDefault();
-
-    if (username === "admin" && password === "admin123") {
-      if (rememberMe) {
-        localStorage.setItem("rememberedUsername", username);
-      } else {
-        localStorage.removeItem("rememberedUsername");
-      }
-      alert("Admin login successful!");
+    
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', username)
+      .single();
+    
+    if (error || !data) {
+      setError("Invalid credentials");
+    } else if (data.role !== "admin") {
+      setError("Not an admin account");
+    } else {
+      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("isLoggedIn", "true");
       handleClosePopup();
       navigate("/admin-dashboard");
-    } else {
-      setError("Invalid username or password");
     }
   };
 
@@ -84,7 +136,7 @@ const LandingPage = () => {
 
   return (
     <>
-      <div className="full-width-wrapper">
+      <div className={`full-width-wrapper ${showLoginPopup ? "blur-background" : ""}`}>
         <header className="full-header">
           <div className="header-content">
             <div className="logo">
@@ -130,17 +182,23 @@ const LandingPage = () => {
           isClosing={isClosing}
           handleClosePopup={handleClosePopup}
           showAdminForm={showAdminForm}
+          showOffice365Form={showOffice365Form}
           handleShowAdminForm={handleShowAdminForm}
+          handleShowOffice365Form={handleShowOffice365Form}
           handleBackToOptions={handleBackToOptions}
           handleAdminSubmit={handleAdminSubmit}
+          handleOffice365Submit={handleOffice365Submit}
           username={username}
           setUsername={setUsername}
           password={password}
           setPassword={setPassword}
+          office365Email={office365Email}
+          setOffice365Email={setOffice365Email}
+          office365Password={office365Password}
+          setOffice365Password={setOffice365Password}
           error={error}
           rememberMe={rememberMe}
           setRememberMe={setRememberMe}
-          isSwitching={isSwitching}
         />
       )}
     </>
