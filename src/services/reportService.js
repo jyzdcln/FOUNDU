@@ -4,33 +4,40 @@ export const saveReport = async (report) => {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
+    console.log("1. User object:", user);
+    
     if (!user.id) {
       alert("Please login first before reporting");
       return null;
     }
     
+    const reportData = {
+      user_id: user.id,
+      type: report.type,
+      title: report.itemTitle,
+      category: report.category,
+      description: report.description,
+      location: report.location,
+      date: report.date,
+      photo_url: report.photo || null,
+      status: 'pending'
+    };
+    
+    console.log("2. Report data being sent:", reportData);
+    
     const { data, error } = await supabase
       .from('reports')
-      .insert([
-        {
-          user_id: user.id,
-          type: report.type,
-          title: report.itemTitle,
-          category: report.category,
-          description: report.description,
-          location: report.location,
-          date: report.date,
-          photo_url: report.photo || null,
-          status: 'verified'
-        }
-      ])
+      .insert([reportData])
       .select();
 
+    console.log("3. Supabase response:", { data, error });
+    
     if (error) throw error;
-    alert("Report saved to database and visible to students!");
+    
+    alert("Report submitted! Waiting for admin verification.");
     return data[0];
   } catch (error) {
-    console.error('Save error:', error);
+    console.error('Save error details:', error);
     alert("Error: " + error.message);
     return null;
   }

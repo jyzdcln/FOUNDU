@@ -3,7 +3,7 @@ import "./ReportLostItem.css";
 import reportLostIcon from "../../assets/icons/report-lost-icon.png";
 import { saveReport } from "../../services/reportService";
 
-const ReportLostItem = ({ onClose }) => {
+const ReportLostItem = () => {
   const [formData, setFormData] = useState({
     itemTitle: "",
     category: "",
@@ -49,6 +49,11 @@ const ReportLostItem = ({ onClose }) => {
     }
   };
 
+  const handleCancel = () => {
+    resetForm();
+    scrollToTop();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -89,19 +94,19 @@ const ReportLostItem = ({ onClose }) => {
 
         <div className="reportlost-form-body">
           <form onSubmit={handleSubmit}>
-            <div className="reportlost-form-group">
-              <label>ITEM TITLE</label>
-              <input
-                type="text"
-                name="itemTitle"
-                placeholder="e.g. Silver Dell Laptop, Red Umbrella"
-                value={formData.itemTitle}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <div className="reportlost-form-grid">
+              <div className="reportlost-form-group reportlost-full-width">
+                <label>ITEM TITLE</label>
+                <input
+                  type="text"
+                  name="itemTitle"
+                  placeholder="e.g. Silver Dell Laptop, Red Umbrella"
+                  value={formData.itemTitle}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
 
-            <div className="reportlost-form-row">
               <div className="reportlost-form-group">
                 <label>CATEGORY</label>
                 <select name="category" value={formData.category} onChange={handleInputChange} required>
@@ -114,60 +119,61 @@ const ReportLostItem = ({ onClose }) => {
                   <option value="Others">Others</option>
                 </select>
               </div>
+
               <div className="reportlost-form-group">
                 <label>DATE LOST</label>
                 <input type="date" name="dateLost" value={formData.dateLost} onChange={handleInputChange} required />
               </div>
-            </div>
 
-            <div className="reportlost-form-group">
-              <label>LOCATION</label>
-              <input
-                type="text"
-                name="location"
-                placeholder="e.g. Library Rooftop, STI Building Room 201"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="reportlost-form-group">
-              <label>DETAILED DESCRIPTION</label>
-              <textarea
-                name="description"
-                rows="4"
-                placeholder="Describe the item's unique features, color, brand, condition, etc."
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-              ></textarea>
-            </div>
-
-            <div className="reportlost-form-group">
-              <label>UPLOAD PHOTO (OPTIONAL)</label>
-              <div className="reportlost-photo-upload-area" onClick={() => document.getElementById('reportlost-photoInput').click()}>
+              <div className="reportlost-form-group reportlost-full-width">
+                <label>LOCATION</label>
                 <input
-                  type="file"
-                  id="reportlost-photoInput"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  style={{ display: 'none' }}
+                  type="text"
+                  name="location"
+                  placeholder="e.g. Library Rooftop, STI Building Room 201"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  required
                 />
-                <div className="reportlost-upload-icon"></div>
-                <p>Click or drop image here</p>
-                <span className="reportlost-upload-hint">Max file size: 5 MB</span>
-                {formData.photo && (
-                  <div className="reportlost-selected-file">
-                    ✓ Photo uploaded
-                  </div>
-                )}
+              </div>
+
+              <div className="reportlost-form-group reportlost-full-width">
+                <label>DETAILED DESCRIPTION</label>
+                <textarea
+                  name="description"
+                  rows="4"
+                  placeholder="Describe the item's unique features, color, brand, condition, etc."
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  required
+                ></textarea>
+              </div>
+
+              <div className="reportlost-form-group reportlost-full-width">
+                <label>UPLOAD PHOTO (OPTIONAL)</label>
+                <div className="reportlost-photo-upload-area" onClick={() => document.getElementById('reportlost-photoInput').click()}>
+                  <input
+                    type="file"
+                    id="reportlost-photoInput"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="reportlost-upload-icon"></div>
+                  <p>Click or drop image here</p>
+                  <span className="reportlost-upload-hint">Max file size: 5 MB</span>
+                  {formData.photo && (
+                    <div className="reportlost-selected-file">
+                      Photo uploaded
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="reportlost-form-buttons">
               <button type="submit" className="reportlost-submit-btn">UPLOAD REPORT</button>
-              <button type="button" className="reportlost-cancel-btn" onClick={onClose}>Cancel</button>
+              <button type="button" className="reportlost-cancel-btn" onClick={handleCancel}>Cancel</button>
             </div>
           </form>
         </div>

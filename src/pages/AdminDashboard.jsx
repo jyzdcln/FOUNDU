@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
-import ReportLostItem from "../components/student/ReportLostItem";
-import ReportFoundItem from "../components/student/ReportFoundItem";
-import { getReports, updateReportStatus } from "../services/reportService";
+import ReportLostItem from "../components/admin/ReportLostItem";
+import ReportFoundItem from "../components/admin/ReportFoundItem";
+import ViewReports from "./ViewReports";
+import { getReports } from "../services/reportService";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
-import pendingIcon from "../assets/icons/pending-icon.png";
-import verifiedIcon from "../assets/icons/verified-icon.png";
+import viewReportsIcon from "../assets/icons/verified-icon.png";
 import matchedIcon from "../assets/icons/matched-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
 import adminLostIcon from "../assets/icons/admin-lost-icon.png";
@@ -18,8 +18,7 @@ import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState("dashboard");
-  const [pendingCount, setPendingCount] = useState(0);
-  const [pendingReports, setPendingReports] = useState([]);
+  const [allReports, setAllReports] = useState([]);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportType, setReportType] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -37,14 +36,12 @@ const AdminDashboard = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleCloseForm = () => {
-    setShowReportForm(false);
-    setReportType("");
-  };
-
   const handleMenuClick = (menu) => {
     setShowReportForm(false);
     setActiveMenu(menu);
+    if (menu === "viewreports") {
+      loadAllReports();
+    }
   };
 
   const handleReportLost = () => {
@@ -76,20 +73,12 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
-    loadPendingReports();
+    loadAllReports();
   }, []);
 
-  const loadPendingReports = async () => {
-    const allReports = await getReports();
-    const pending = allReports.filter(r => r.status === "pending");
-    setPendingReports(pending);
-    setPendingCount(pending.length);
-  };
-
-  const handleVerify = async (id) => {
-    await updateReportStatus(id, "verified");
-    loadPendingReports();
-    alert("Report verified!");
+  const loadAllReports = async () => {
+    const reports = await getReports();
+    setAllReports(reports);
   };
 
   const getPageTitle = () => {
@@ -98,8 +87,7 @@ const AdminDashboard = () => {
     }
     switch(activeMenu) {
       case "dashboard": return "Dashboard";
-      case "pending": return "Pending Reports";
-      case "verified": return "Verified Items";
+      case "viewreports": return "View Reports";
       case "matched": return "Matched Items";
       case "claimed": return "Claimed Items";
       default: return "Dashboard";
@@ -109,65 +97,37 @@ const AdminDashboard = () => {
   const getPageContent = () => {
     if (showReportForm) {
       if (reportType === "lost") {
-        return <ReportLostItem onClose={handleCloseForm} />;
+        return <ReportLostItem />;
       } else {
-        return <ReportFoundItem onClose={handleCloseForm} />;
+        return <ReportFoundItem />;
       }
     }
     
     switch(activeMenu) {
       case "dashboard":
         return <div className="content-box"></div>;
-      case "pending":
-        return (
-          <div className="content-box">
-            {pendingReports.length === 0 ? (
-              <p>No pending reports</p>
-            ) : (
-              <div className="report-list">
-                {pendingReports.map((report) => (
-                  <div key={report.id} className="report-item">
-                    <div>
-                      <strong>{report.title}</strong>
-                      <p>Type: {report.type.toUpperCase()}</p>
-                      <p>Category: {report.category}</p>
-                      <p>Location: {report.location}</p>
-                      <p>Reported by: {report.users?.name || "Student"}</p>
-                    </div>
-                    <button 
-                      className="verify-btn"
-                      onClick={() => handleVerify(report.id)}
-                    >
-                      Verify
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      case "verified":
-        return (
-          <div className="content-box">
-            <p>Coming soon... (Function 2)</p>
-          </div>
-        );
+      case "viewreports":
+        return <ViewReports />;
       case "matched":
         return (
           <div className="content-box">
-            <p>Coming soon... (Function 3)</p>
+            <p>Coming soon... (Matched Items)</p>
           </div>
         );
       case "claimed":
         return (
           <div className="content-box">
-            <p>Coming soon... (Function 4)</p>
+            <p>Coming soon... (Claimed Items)</p>
           </div>
         );
       default:
         return <p>Welcome to Dashboard</p>;
     }
   };
+
+  const pendingCount = allReports.filter(r => r.status === "pending").length;
+  const verifiedCount = allReports.filter(r => r.status === "verified").length;
+  const rejectedCount = allReports.filter(r => r.status === "rejected").length;
 
   return (
     <div className="admin-dashboard">
@@ -188,13 +148,9 @@ const AdminDashboard = () => {
 
           <div className="sidebar-section">
             <div className="sidebar-section-title">REPORTS MANAGEMENT</div>
-            <button className={`nav-item ${activeMenu === "pending" ? "active" : ""}`} onClick={() => handleMenuClick("pending")}>
-              <img src={pendingIcon} alt="pending" className="nav-icon-img" />
-              Pending Reports
-            </button>
-            <button className={`nav-item ${activeMenu === "verified" ? "active" : ""}`} onClick={() => handleMenuClick("verified")}>
-              <img src={verifiedIcon} alt="verified" className="nav-icon-img" />
-              Verified Items
+            <button className={`nav-item ${activeMenu === "viewreports" ? "active" : ""}`} onClick={() => handleMenuClick("viewreports")}>
+              <img src={viewReportsIcon} alt="view reports" className="nav-icon-img" />
+              View Reports
             </button>
             <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => handleMenuClick("matched")}>
               <img src={matchedIcon} alt="matched" className="nav-icon-img" />
@@ -250,20 +206,20 @@ const AdminDashboard = () => {
         {!showReportForm && activeMenu === "dashboard" && (
           <div className="stats-container">
             <div className="stat-card">
-              <h3>Pending Reports</h3>
-              <p className="stat-number">{pendingCount}</p>
+              <h3>Total Reports</h3>
+              <p className="stat-number">{allReports.length}</p>
             </div>
             <div className="stat-card">
-              <h3>Verified Items</h3>
-              <p className="stat-number">0</p>
+              <h3>Pending</h3>
+              <p className="stat-number">{pendingCount}</p>
             </div> 
             <div className="stat-card">
-              <h3>Matched Items</h3>
-              <p className="stat-number">0</p>
+              <h3>Verified</h3>
+              <p className="stat-number">{verifiedCount}</p>
             </div>
             <div className="stat-card">
-              <h3>Claimed Items</h3>
-              <p className="stat-number">0</p>
+              <h3>Rejected</h3>
+              <p className="stat-number">{rejectedCount}</p>
             </div>
           </div>
         )}

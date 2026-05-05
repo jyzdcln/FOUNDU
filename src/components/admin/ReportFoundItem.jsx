@@ -3,7 +3,7 @@ import "./ReportFoundItem.css";
 import reportFoundIcon from "../../assets/icons/report-found-icon.png";
 import { saveReport } from "../../services/reportService";
 
-const ReportFoundItem = ({ onClose }) => {
+const ReportFoundItem = () => {
   const [formData, setFormData] = useState({
     itemTitle: "",
     category: "",
@@ -49,6 +49,11 @@ const ReportFoundItem = ({ onClose }) => {
     }
   };
 
+  const handleCancel = () => {
+    resetForm();
+    scrollToTop();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -89,19 +94,19 @@ const ReportFoundItem = ({ onClose }) => {
 
         <div className="reportfound-form-body">
           <form onSubmit={handleSubmit}>
-            <div className="reportfound-form-group">
-              <label>ITEM TITLE</label>
-              <input
-                type="text"
-                name="itemTitle"
-                placeholder="e.g. Silver Dell Laptop, Red Umbrella"
-                value={formData.itemTitle}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <div className="reportfound-form-grid">
+              <div className="reportfound-form-group reportfound-full-width">
+                <label>ITEM TITLE</label>
+                <input
+                  type="text"
+                  name="itemTitle"
+                  placeholder="e.g. Silver Dell Laptop, Red Umbrella"
+                  value={formData.itemTitle}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
 
-            <div className="reportfound-form-row">
               <div className="reportfound-form-group">
                 <label>CATEGORY</label>
                 <select name="category" value={formData.category} onChange={handleInputChange} required>
@@ -114,60 +119,61 @@ const ReportFoundItem = ({ onClose }) => {
                   <option value="Others">Others</option>
                 </select>
               </div>
+
               <div className="reportfound-form-group">
                 <label>DATE FOUND</label>
                 <input type="date" name="dateFound" value={formData.dateFound} onChange={handleInputChange} required />
               </div>
-            </div>
 
-            <div className="reportfound-form-group">
-              <label>LOCATION</label>
-              <input
-                type="text"
-                name="location"
-                placeholder="e.g. Library Rooftop, STI Building Room 201"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="reportfound-form-group">
-              <label>DETAILED DESCRIPTION</label>
-              <textarea
-                name="description"
-                rows="4"
-                placeholder="Describe the item's unique features, color, brand, condition, etc."
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-              ></textarea>
-            </div>
-
-            <div className="reportfound-form-group">
-              <label>UPLOAD PHOTO (OPTIONAL)</label>
-              <div className="reportfound-photo-upload-area" onClick={() => document.getElementById('reportfound-photoInput').click()}>
+              <div className="reportfound-form-group reportfound-full-width">
+                <label>LOCATION</label>
                 <input
-                  type="file"
-                  id="reportfound-photoInput"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  style={{ display: 'none' }}
+                  type="text"
+                  name="location"
+                  placeholder="e.g. Library Rooftop, STI Building Room 201"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  required
                 />
-                <div className="reportfound-upload-icon"></div>
-                <p>Click or drop image here</p>
-                <span className="reportfound-upload-hint">Max file size: 5 MB</span>
-                {formData.photo && (
-                  <div className="reportfound-selected-file">
-                    ✓ Photo uploaded
-                  </div>
-                )}
+              </div>
+
+              <div className="reportfound-form-group reportfound-full-width">
+                <label>DETAILED DESCRIPTION</label>
+                <textarea
+                  name="description"
+                  rows="4"
+                  placeholder="Describe the item's unique features, color, brand, condition, etc."
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  required
+                ></textarea>
+              </div>
+
+              <div className="reportfound-form-group reportfound-full-width">
+                <label>UPLOAD PHOTO (OPTIONAL)</label>
+                <div className="reportfound-photo-upload-area" onClick={() => document.getElementById('reportfound-photoInput').click()}>
+                  <input
+                    type="file"
+                    id="reportfound-photoInput"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="reportfound-upload-icon"></div>
+                  <p>Click or drop image here</p>
+                  <span className="reportfound-upload-hint">Max file size: 5 MB</span>
+                  {formData.photo && (
+                    <div className="reportfound-selected-file">
+                      ✓ Photo uploaded
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="reportfound-form-buttons">
               <button type="submit" className="reportfound-submit-btn">UPLOAD REPORT</button>
-              <button type="button" className="reportfound-cancel-btn" onClick={onClose}>Cancel</button>
+              <button type="button" className="reportfound-cancel-btn" onClick={handleCancel}>Cancel</button>
             </div>
           </form>
         </div>
