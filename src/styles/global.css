@@ -131,7 +131,7 @@ body {
   justify-content: flex-start;
   text-align: left;
   flex: 1;
-  padding:  150px 80px;
+  padding:  140px 80px;
   font-family: 'Inter', sans-serif;
   animation: fadeInUp 0.8s ease-out;
 }
