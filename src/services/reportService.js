@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-export const saveReport = async (report) => {
+export const saveReport = async (report, userRole = 'student') => {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
@@ -11,6 +11,8 @@ export const saveReport = async (report) => {
       return null;
     }
     
+    const status = userRole === 'admin' ? 'verified' : 'pending';
+    
     const reportData = {
       user_id: user.id,
       type: report.type,
@@ -20,21 +22,26 @@ export const saveReport = async (report) => {
       location: report.location,
       date: report.date,
       photo_url: report.photo || null,
-      status: 'pending'
+      status: status
     };
     
     console.log("2. Report data being sent:", reportData);
+    console.log("3. User role:", userRole, "Status set to:", status);
     
     const { data, error } = await supabase
       .from('reports')
       .insert([reportData])
       .select();
 
-    console.log("3. Supabase response:", { data, error });
+    console.log("4. Supabase response:", { data, error });
     
     if (error) throw error;
     
-    alert("Report submitted! Waiting for admin verification.");
+    if (userRole === 'admin') {
+      alert("Report submitted and automatically verified!");
+    } else {
+      alert("Report submitted! Waiting for admin verification.");
+    }
     return data[0];
   } catch (error) {
     console.error('Save error details:', error);
@@ -54,6 +61,38 @@ export const getReports = async () => {
     return data || [];
   } catch (error) {
     console.error('Get reports error:', error);
+    return [];
+  }
+};
+
+export const getPendingReports = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('*, users(name, email)')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Get pending reports error:', error);
+    return [];
+  }
+};
+
+export const getVerifiedReports = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('*, users(name, email)')
+      .eq('status', 'verified')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Get verified reports error:', error);
     return [];
   }
 };

@@ -4,16 +4,18 @@ import "./AdminDashboard.css";
 import ReportLostItem from "../components/admin/ReportLostItem";
 import ReportFoundItem from "../components/admin/ReportFoundItem";
 import ViewReports from "./ViewReports";
+import ClaimedItems from "./ClaimedItems";
+import UnclaimedItems from "./UnclaimedItems";
 import { getReports } from "../services/reportService";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
-import viewReportsIcon from "../assets/icons/verified-icon.png";
-import matchedIcon from "../assets/icons/matched-icon.png";
+import viewReportsIcon from "../assets/icons/view-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
 import adminLostIcon from "../assets/icons/admin-lost-icon.png";
 import adminFoundIcon from "../assets/icons/admin-found-icon.png";
 import adminUserIcon from "../assets/icons/admin-user-icon.png";
 import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
+import adminUnclaimedIcon from "../assets/icons/unclaimed-icon.png";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -27,12 +29,12 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
     localStorage.removeItem("user");
-    alert("Logged out successfully!");
+    alert("Logged out successfully");
     navigate("/");
   };
 
   const handleSettings = () => {
-    alert("Settings - Coming soon!");
+    alert("Settings - Coming soon");
     setIsDropdownOpen(false);
   };
 
@@ -88,7 +90,7 @@ const AdminDashboard = () => {
     switch(activeMenu) {
       case "dashboard": return "Dashboard";
       case "viewreports": return "View Reports";
-      case "matched": return "Matched Items";
+      case "unclaimed": return "Unclaimed Items";
       case "claimed": return "Claimed Items";
       default: return "Dashboard";
     }
@@ -108,18 +110,10 @@ const AdminDashboard = () => {
         return <div className="content-box"></div>;
       case "viewreports":
         return <ViewReports />;
-      case "matched":
-        return (
-          <div className="content-box">
-            <p>Coming soon... (Matched Items)</p>
-          </div>
-        );
+      case "unclaimed":
+        return <UnclaimedItems />;
       case "claimed":
-        return (
-          <div className="content-box">
-            <p>Coming soon... (Claimed Items)</p>
-          </div>
-        );
+        return <ClaimedItems />;
       default:
         return <p>Welcome to Dashboard</p>;
     }
@@ -127,7 +121,9 @@ const AdminDashboard = () => {
 
   const pendingCount = allReports.filter(r => r.status === "pending").length;
   const verifiedCount = allReports.filter(r => r.status === "verified").length;
+  const claimedCount = allReports.filter(r => r.status === "claimed").length;
   const rejectedCount = allReports.filter(r => r.status === "rejected").length;
+  const unclaimedCount = allReports.filter(r => r.status === "verified").length;
 
   return (
     <div className="admin-dashboard">
@@ -152,9 +148,10 @@ const AdminDashboard = () => {
               <img src={viewReportsIcon} alt="view reports" className="nav-icon-img" />
               View Reports
             </button>
-            <button className={`nav-item ${activeMenu === "matched" ? "active" : ""}`} onClick={() => handleMenuClick("matched")}>
-              <img src={matchedIcon} alt="matched" className="nav-icon-img" />
-              Matched Items
+            <button className={`nav-item ${activeMenu === "unclaimed" ? "active" : ""}`} onClick={() => handleMenuClick("unclaimed")}>
+              <img src={adminUnclaimedIcon} alt="unclaimed" className="nav-icon-img" />
+              Unclaimed Items
+              {unclaimedCount > 0 && <span className="nav-badge">{unclaimedCount}</span>}
             </button>
             <button className={`nav-item ${activeMenu === "claimed" ? "active" : ""}`} onClick={() => handleMenuClick("claimed")}>
               <img src={claimedIcon} alt="claimed" className="nav-icon-img" />
@@ -216,6 +213,10 @@ const AdminDashboard = () => {
             <div className="stat-card">
               <h3>Verified</h3>
               <p className="stat-number">{verifiedCount}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Claimed</h3>
+              <p className="stat-number">{claimedCount}</p>
             </div>
             <div className="stat-card">
               <h3>Rejected</h3>

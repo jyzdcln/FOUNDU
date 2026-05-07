@@ -67,10 +67,10 @@ const ReportLostItem = () => {
       photo: formData.photo
     };
     
-    const result = await saveReport(reportData);
+    const result = await saveReport(reportData, 'admin');
     
     if (result) {
-      alert(`Report Lost Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
+      alert(`Report Lost Item submitted and automatically verified!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
       resetForm();
       scrollToTop();
     } else {

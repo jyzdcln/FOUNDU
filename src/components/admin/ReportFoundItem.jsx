@@ -67,10 +67,10 @@ const ReportFoundItem = () => {
       photo: formData.photo
     };
     
-    const result = await saveReport(reportData);
+    const result = await saveReport(reportData, 'admin');
     
     if (result) {
-      alert(`Report Found Item submitted!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
+      alert(`Report Found Item submitted and automatically verified!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
       resetForm();
       scrollToTop();
     } else {
@@ -164,7 +164,7 @@ const ReportFoundItem = () => {
                   <span className="reportfound-upload-hint">Max file size: 5 MB</span>
                   {formData.photo && (
                     <div className="reportfound-selected-file">
-                      ✓ Photo uploaded
+                      Photo uploaded
                     </div>
                   )}
                 </div>
