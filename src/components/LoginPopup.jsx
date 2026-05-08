@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/LoginPopup.css";
+import "./LoginPopup.css";
 
 const LoginPopup = ({
   isClosing,       
