@@ -2,7 +2,7 @@ import React from "react";
 import "../styles/LoginPopup.css";
 
 const LoginPopup = ({
-  isClosing,
+  isClosing,       
   handleClosePopup,
   showAdminForm,
   showOffice365Form,
