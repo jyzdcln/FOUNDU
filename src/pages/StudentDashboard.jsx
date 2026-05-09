@@ -182,7 +182,7 @@ const StudentDashboard = () => {
           <div className="browse-layout">
             <div className="browse-sidebar">
               <div className="browse-sidebar-section">
-                <h3>Refine Search</h3>
+                <h3>Search Item</h3>
               </div>
               
               <div className="browse-sidebar-section">
@@ -296,11 +296,11 @@ const StudentDashboard = () => {
                           <div className="browse-item-location">{report.location}</div>
                         </div>
                         <button 
-                          className="browse-view-details-btn"
-                          onClick={() => toggleViewDetails(report.id)}
-                        >
-                          VIEW DETAILS
-                        </button>
+                               className="browse-view-details-btn"
+                               onClick={() => navigate(`/item-details/${report.id}`)}
+                               >
+                                VIEW DETAILS
+                                </button>
                         {isExpanded && (
                           <div className="browse-item-details-expanded">
                             <div className="browse-expanded-description">

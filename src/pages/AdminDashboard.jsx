@@ -6,6 +6,7 @@ import ReportFoundItem from "../components/admin/ReportFoundItem";
 import ViewReports from "./ViewReports";
 import ClaimedItems from "./ClaimedItems";
 import UnclaimedItems from "./UnclaimedItems";
+import Notifications from "./Notifications";
 import { getReports } from "../services/reportService";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
@@ -16,6 +17,7 @@ import adminFoundIcon from "../assets/icons/admin-found-icon.png";
 import adminUserIcon from "../assets/icons/admin-user-icon.png";
 import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
 import adminUnclaimedIcon from "../assets/icons/unclaimed-icon.png";
+import notificationIcon from "../assets/icons/notification-icon.png";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -24,7 +26,9 @@ const AdminDashboard = () => {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportType, setReportType] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const notificationRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
@@ -44,28 +48,40 @@ const AdminDashboard = () => {
     if (menu === "viewreports") {
       loadAllReports();
     }
+    setIsNotificationOpen(false);
   };
 
   const handleReportLost = () => {
     setReportType("lost");
     setShowReportForm(true);
     setActiveMenu("lost");
+    setIsNotificationOpen(false);
   };
 
   const handleReportFound = () => {
     setReportType("found");
     setShowReportForm(true);
     setActiveMenu("found");
+    setIsNotificationOpen(false);
   };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+    setIsNotificationOpen(false);
+  };
+
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+    setIsDropdownOpen(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -92,6 +108,7 @@ const AdminDashboard = () => {
       case "viewreports": return "View Reports";
       case "unclaimed": return "Unclaimed Items";
       case "claimed": return "Claimed Items";
+      case "notifications": return "Notifications";
       default: return "Dashboard";
     }
   };
@@ -114,6 +131,8 @@ const AdminDashboard = () => {
         return <UnclaimedItems />;
       case "claimed":
         return <ClaimedItems />;
+      case "notifications":
+        return <Notifications />;
       default:
         return <p>Welcome to Dashboard</p>;
     }
@@ -182,21 +201,62 @@ const AdminDashboard = () => {
           <div className="top-bar-left">
             <h1>{getPageTitle()}</h1>
           </div>
-          <div className="admin-info" ref={dropdownRef}>
-            <div className="avatar" onClick={toggleDropdown}>
-              <img src={adminUserIcon} alt="user" className="avatar-user-icon" />
-              <img src={adminDropdownIcon} alt="dropdown" className="avatar-dropdown-icon" />
-            </div>
-            {isDropdownOpen && (
-              <div className="avatar-dropdown-menu">
-                <button className="avatar-dropdown-item" onClick={handleSettings}>
-                  Settings
-                </button>
-                <button className="avatar-dropdown-item logout" onClick={handleLogout}>
-                  Logout
-                </button>
+          <div className="top-bar-right">
+            <div className="notification-bell" ref={notificationRef}>
+              <div className="notification-icon" onClick={toggleNotification}>
+                <img src={notificationIcon} alt="notifications" className="notification-icon-img" />
+                <span className="notification-badge">3</span>
               </div>
-            )}
+              {isNotificationOpen && (
+                <div className="notification-dropdown">
+                  <div className="notification-header">
+                    <h4>Notifications</h4>
+                    <button className="mark-all-read">Mark all as read</button>
+                  </div>
+                  <div className="notification-list">
+                    <div className="notification-item unread">
+                      <div className="notification-content">
+                        <p className="notification-message">New report submitted by student</p>
+                        <span className="notification-time">5 minutes ago</span>
+                      </div>
+                    </div>
+                    <div className="notification-item">
+                      <div className="notification-content">
+                        <p className="notification-message">Report has been verified</p>
+                        <span className="notification-time">1 hour ago</span>
+                      </div>
+                    </div>
+                    <div className="notification-item">
+                      <div className="notification-content">
+                        <p className="notification-message">New claim submitted for item</p>
+                        <span className="notification-time">3 hours ago</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="notification-footer">
+                    <button className="view-all-btn" onClick={() => handleMenuClick("notifications")}>
+                      View All Notifications
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="admin-info" ref={dropdownRef}>
+              <div className="avatar" onClick={toggleDropdown}>
+                <img src={adminUserIcon} alt="user" className="avatar-user-icon" />
+                <img src={adminDropdownIcon} alt="dropdown" className="avatar-dropdown-icon" />
+              </div>
+              {isDropdownOpen && (
+                <div className="avatar-dropdown-menu">
+                  <button className="avatar-dropdown-item" onClick={handleSettings}>
+                    Settings
+                  </button>
+                  <button className="avatar-dropdown-item logout" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

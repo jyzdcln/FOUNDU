@@ -70,6 +70,8 @@ const LandingPage = () => {
     
     if (error || !data) {
       setError("Invalid email or password");
+    } else if (data.password !== office365Password) {
+      setError("Invalid email or password");
     } else {
       localStorage.setItem("user", JSON.stringify(data));
       localStorage.setItem("isLoggedIn", "true");
@@ -115,6 +117,8 @@ const LandingPage = () => {
       .single();
     
     if (error || !data) {
+      setError("Invalid credentials");
+    } else if (data.password !== password) {
       setError("Invalid credentials");
     } else if (data.role !== "admin") {
       setError("Not an admin account");

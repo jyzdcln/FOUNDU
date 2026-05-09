@@ -25,16 +25,11 @@ body {
 .full-width-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   background: whitesmoke;
   margin: 0;
   padding: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .full-header {
@@ -131,7 +126,7 @@ body {
   justify-content: flex-start;
   text-align: left;
   flex: 1;
-  padding:  140px 80px;
+  padding: 140px 80px;
   font-family: 'Inter', sans-serif;
   animation: fadeInUp 0.8s ease-out;
 }
