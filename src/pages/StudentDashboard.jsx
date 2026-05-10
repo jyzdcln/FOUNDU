@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./StudentDashboard.css";
 import { getReports } from "../services/reportService";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
@@ -9,12 +9,12 @@ import studentLogoutIcon from "../assets/icons/Studentlogout-icon.png";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
-  const [showBrowse, setShowBrowse] = useState(false);
-  const [expandedReportId, setExpandedReportId] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [showBrowse, setShowBrowse] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const dropdownRef = useRef(null);
   
   const [filters, setFilters] = useState({
@@ -28,7 +28,15 @@ const StudentDashboard = () => {
   }, []);
 
   useEffect(() => {
-    applyFilters();
+    if (location.state?.showBrowse !== undefined) {
+      setShowBrowse(location.state.showBrowse);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (reports.length > 0) {
+      applyFilters();
+    }
   }, [filters, reports]);
 
   useEffect(() => {
@@ -44,8 +52,13 @@ const StudentDashboard = () => {
   }, []);
 
   const loadReports = async () => {
+    setInitialLoading(true);
     const allReports = await getReports();
     setReports(allReports);
+    
+    setTimeout(() => {
+      setInitialLoading(false);
+    }, 500);
   };
 
   const applyFilters = () => {
@@ -53,8 +66,8 @@ const StudentDashboard = () => {
     
     if (filters.keyword) {
       filtered = filtered.filter(report => 
-        report.title.toLowerCase().includes(filters.keyword.toLowerCase()) ||
-        report.description.toLowerCase().includes(filters.keyword.toLowerCase())
+        report.title?.toLowerCase().includes(filters.keyword.toLowerCase()) ||
+        report.description?.toLowerCase().includes(filters.keyword.toLowerCase())
       );
     }
     
@@ -75,25 +88,15 @@ const StudentDashboard = () => {
   };
 
   const handleBrowse = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setShowBrowse(true);
-      setExpandedReportId(null);
-      setIsAnimating(false);
-    }, 300);
+    setShowBrowse(true);
   };
 
   const handleDashboard = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setShowBrowse(false);
-      setExpandedReportId(null);
-      setIsAnimating(false);
-    }, 300);
+    setShowBrowse(false);
   };
 
-  const toggleViewDetails = (reportId) => {
-    setExpandedReportId(expandedReportId === reportId ? null : reportId);
+  const handleViewDetails = (reportId) => {
+    navigate(`/item-details/${reportId}`);
   };
 
   const getStatusBadgeClass = (status) => {
@@ -127,6 +130,38 @@ const StudentDashboard = () => {
 
   const uniqueCategories = ["All Categories", ...new Set(reports.map(r => r.category).filter(Boolean))];
 
+  if (initialLoading && reports.length === 0) {
+    return (
+      <div className="student-dashboard-container">
+        <header className="student-full-header">
+          <div className="student-header-content">
+            <div className="student-logo">
+              <img src={founduLogo} alt="FoundU" className="student-logo-img" />
+            </div>
+            <div className="student-header-actions">
+              <span className="student-lang">Browse</span>
+              <span className="student-lang">Dashboard</span>
+              <div className="user-dropdown">
+                <div className="user-dropdown-trigger">
+                  <div className="user-icon">
+                    <img src={studentUserIcon} alt="user" className="user-icon-img" />
+                  </div>
+                  <div className="dropdown-icon">
+                    <img src={studentDropdownIcon} alt="dropdown" className="dropdown-icon-img" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="student-dashboard-container">
       <header className="student-full-header">
@@ -153,7 +188,7 @@ const StudentDashboard = () => {
                 <div className="dropdown-menu">
                   <button className="dropdown-item" onClick={handleLogout}>
                     <img src={studentLogoutIcon} alt="logout" className="dropdown-icon-img" />
-                    Log out
+                    Logout
                   </button>
                 </div>
               )}
@@ -162,7 +197,7 @@ const StudentDashboard = () => {
         </div>
       </header>
 
-      <div className={`student-main-content ${isAnimating ? 'fade-out' : 'fade-in'}`}>
+      <div className="student-main-content">
         {!showBrowse ? (
           <div className="student-stats-cards">
             <div className="student-stat-card">
@@ -271,56 +306,36 @@ const StudentDashboard = () => {
                     <p>No reports found</p>
                   </div>
                 ) : (
-                  filteredReports.map((report) => {
-                    const isExpanded = expandedReportId === report.id;
-                    return (
-                      <div key={report.id} className="browse-item-card">
-                        <div className="browse-item-card-image">
-                          {report.photo_url ? (
-                            <img src={report.photo_url} alt={report.title} />
-                          ) : (
-                            <span>No image</span>
-                          )}
-                        </div>
-                        <div className="browse-item-card-content">
-                          <div className="browse-item-card-header">
-                            <div className={`browse-item-type-badge ${report.type}`}>
-                              {report.type === "lost" ? "LOST" : "FOUND"}
-                            </div>
-                            <div className="browse-item-date">
-                              {formatDate(report.created_at)}
-                            </div>
-                          </div>
-                          <div className="browse-item-category">{report.category || "Item"}</div>
-                          <div className="browse-item-title">{report.title}</div>
-                          <div className="browse-item-location">{report.location}</div>
-                        </div>
-                        <button 
-                               className="browse-view-details-btn"
-                               onClick={() => navigate(`/item-details/${report.id}`)}
-                               >
-                                VIEW DETAILS
-                                </button>
-                        {isExpanded && (
-                          <div className="browse-item-details-expanded">
-                            <div className="browse-expanded-description">
-                              <strong>Description:</strong><br />
-                              {report.description}
-                            </div>
-                            <div className="browse-expanded-description">
-                              <strong>Date {report.type === "lost" ? "Lost" : "Found"}:</strong><br />
-                              {formatDate(report.date)}
-                            </div>
-                            <div className="browse-expanded-status">
-                              <span className={`status-badge ${getStatusBadgeClass(report.status)}`}>
-                                {report.status.toUpperCase()}
-                              </span>
-                            </div>
-                          </div>
+                  filteredReports.map((report) => (
+                    <div key={report.id} className="browse-item-card">
+                      <div className="browse-item-card-image">
+                        {report.photo_url ? (
+                          <img src={report.photo_url} alt={report.title} />
+                        ) : (
+                          <span>No image</span>
                         )}
                       </div>
-                    );
-                  })
+                      <div className="browse-item-card-content">
+                        <div className="browse-item-card-header">
+                          <div className={`browse-item-type-badge ${report.type}`}>
+                            {report.type === "lost" ? "LOST" : "FOUND"}
+                          </div>
+                          <div className="browse-item-date">
+                            {formatDate(report.created_at)}
+                          </div>
+                        </div>
+                        <div className="browse-item-category">{report.category || "Item"}</div>
+                        <div className="browse-item-title">{report.title}</div>
+                        <div className="browse-item-location">{report.location}</div>
+                      </div>
+                      <button 
+                        className="browse-view-details-btn"
+                        onClick={() => handleViewDetails(report.id)}
+                      >
+                        VIEW DETAILS
+                      </button>
+                    </div>
+                  ))
                 )}
               </div>
             </div>

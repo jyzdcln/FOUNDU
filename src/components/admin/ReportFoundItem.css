@@ -264,3 +264,14 @@
     flex: 1;
   }
 }
+.reportfound-loading {
+  margin-top: 10px;
+  color: #2b5797;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reportfound-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

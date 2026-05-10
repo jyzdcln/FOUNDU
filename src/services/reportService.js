@@ -54,8 +54,9 @@ export const getReports = async () => {
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('*, users(name, email)')
-      .order('created_at', { ascending: false });
+      .select('id, type, title, category, description, location, date, photo_url, status, created_at, users(name, email)')
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
     return data || [];
@@ -69,9 +70,10 @@ export const getPendingReports = async () => {
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('*, users(name, email)')
+      .select('id, type, title, category, description, location, date, photo_url, status, created_at, users(name, email)')
       .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
     return data || [];
@@ -85,9 +87,10 @@ export const getVerifiedReports = async () => {
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('*, users(name, email)')
+      .select('id, type, title, category, description, location, date, photo_url, status, created_at, users(name, email)')
       .eq('status', 'verified')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
     return data || [];

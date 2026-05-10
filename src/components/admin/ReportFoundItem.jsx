@@ -12,6 +12,7 @@ const ReportFoundItem = () => {
     description: "",
     photo: null
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formTopRef = useRef(null);
 
   const handleInputChange = (e) => {
@@ -19,14 +20,62 @@ const ReportFoundItem = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePhotoChange = (e) => {
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          let width = img.width;
+          let height = img.height;
+          const maxWidth = 800;
+          const maxHeight = 800;
+          
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            resolve(blob);
+          }, 'image/jpeg', 0.7);
+        };
+      };
+    });
+  };
+
+  const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (file && file.size <= 5 * 1024 * 1024) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, photo: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      setIsSubmitting(true);
+      try {
+        const compressedImage = await compressImage(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormData(prev => ({ ...prev, photo: reader.result }));
+          setIsSubmitting(false);
+        };
+        reader.readAsDataURL(compressedImage);
+      } catch (error) {
+        console.error("Error compressing image:", error);
+        setIsSubmitting(false);
+      }
     } else if (file) {
       alert("File size must be less than 5MB");
     }
@@ -56,6 +105,7 @@ const ReportFoundItem = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     const reportData = {
       type: "found",
@@ -68,6 +118,7 @@ const ReportFoundItem = () => {
     };
     
     const result = await saveReport(reportData, 'admin');
+    setIsSubmitting(false);
     
     if (result) {
       alert(`Report Found Item submitted and automatically verified!\n\nItem: ${formData.itemTitle}\nCategory: ${formData.category}\nLocation: ${formData.location}`);
@@ -167,12 +218,15 @@ const ReportFoundItem = () => {
                       Photo uploaded
                     </div>
                   )}
+                  {isSubmitting && <div className="reportfound-loading">Processing image...</div>}
                 </div>
               </div>
             </div>
 
             <div className="reportfound-form-buttons">
-              <button type="submit" className="reportfound-submit-btn">UPLOAD REPORT</button>
+              <button type="submit" className="reportfound-submit-btn" disabled={isSubmitting}>
+                {isSubmitting ? "SUBMITTING..." : "UPLOAD REPORT"}
+              </button>
               <button type="button" className="reportfound-cancel-btn" onClick={handleCancel}>Cancel</button>
             </div>
           </form>

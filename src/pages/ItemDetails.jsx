@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import "./ItemDetails.css";
+import "./StudentDashboard.css";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
 import studentUserIcon from "../assets/icons/admin-user-icon.png";
 import studentDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
@@ -11,7 +12,6 @@ const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showClaimForm, setShowClaimForm] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = React.useRef(null);
@@ -33,13 +33,9 @@ const ItemDetails = () => {
   }, []);
 
   const loadItemDetails = async () => {
-    setLoading(true);
     const { data, error } = await supabase
       .from('reports')
-      .select(`
-        *,
-        users(name, email)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
     
@@ -48,7 +44,6 @@ const ItemDetails = () => {
     } else {
       setItem(data);
     }
-    setLoading(false);
   };
 
   const formatDate = (dateString) => {
@@ -73,13 +68,13 @@ const ItemDetails = () => {
     setShowClaimForm(true);
   };
 
-  if (loading) {
-    return <div className="item-details-container">Loading...</div>;
-  }
+  const goToBrowse = () => {
+    navigate('/student-dashboard', { state: { showBrowse: true } });
+  };
 
-  if (!item) {
-    return <div className="item-details-container">Item not found</div>;
-  }
+  const goToDashboard = () => {
+    navigate('/student-dashboard', { state: { showBrowse: false } });
+  };
 
   return (
     <div className="item-details-container">
@@ -89,8 +84,8 @@ const ItemDetails = () => {
             <img src={founduLogo} alt="FoundU" className="student-logo-img" />
           </div>
           <div className="student-header-actions">
-            <span className="student-lang" onClick={() => navigate('/student-dashboard')}>Browse</span>
-            <span className="student-lang" onClick={() => navigate('/student-dashboard')}>Dashboard</span>
+            <span className="student-lang" onClick={goToBrowse}>Browse</span>
+            <span className="student-lang" onClick={goToDashboard}>Dashboard</span>
             <div className="user-dropdown" ref={dropdownRef}>
               <div 
                 className="user-dropdown-trigger" 
@@ -107,7 +102,7 @@ const ItemDetails = () => {
                 <div className="dropdown-menu">
                   <button className="dropdown-item" onClick={handleLogout}>
                     <img src={studentLogoutIcon} alt="logout" className="dropdown-icon-img" />
-                    Log out
+                    Logout
                   </button>
                 </div>
               )}
@@ -117,76 +112,77 @@ const ItemDetails = () => {
       </header>
 
       <div className="item-details-main">
-        <div className="breadcrumb">
-          <span onClick={() => navigate('/student-dashboard')}>Home</span> / 
-          <span> Browse Items</span> / 
-          <span> Item Details</span>
+        <div className="item-details-breadcrumb">
+          <button className="back-arrow-btn" onClick={goToBrowse}>
+            ← Back to Browse Items
+          </button>
         </div>
 
-        <div className="item-details-card">
-          <div className="item-details-header">
-            <h1>{item.title}</h1>
-            <span className="item-id">ID: #{item.id.slice(0, 8)}</span>
-          </div>
+        {item && (
+          <div className="item-details-card">
+            <div className="item-details-card-header">
+              <h1 className="item-details-title">{item.title}</h1>
+              <span className="item-details-id">ID: #{item.id.slice(0, 8)}</span>
+            </div>
 
-          <div className="item-details-content">
-            {item.photo_url && (
-              <div className="item-image">
-                <img src={item.photo_url} alt={item.title} />
+            <div className="item-details-content">
+              {item.photo_url && (
+                <div className="item-details-image">
+                  <img src={item.photo_url} alt={item.title} />
+                </div>
+              )}
+
+              <div className="item-details-info">
+                <div className="item-details-info-row">
+                  <div className="item-details-info-box">
+                    <label>CATEGORY</label>
+                    <p>{item.category || "Uncategorized"}</p>
+                  </div>
+                  <div className="item-details-info-box">
+                    <label>DATE REPORTED</label>
+                    <p>{formatDate(item.created_at)}</p>
+                  </div>
+                </div>
+                <div className="item-details-info-row">
+                  <div className="item-details-info-box">
+                    <label>LOCATION</label>
+                    <p>{item.location}</p>
+                  </div>
+                </div>
+                <div className="item-details-info-box item-details-info-box-full">
+                  <label>DESCRIPTION</label>
+                  <p>{item.description || "No description provided"}</p>
+                </div>
+              </div>
+            </div>
+
+            {item.type === "found" && (
+              <div className="item-details-claim-section">
+                <div className="item-details-reported-by">
+                  <span className="item-details-reported-label">REPORTED BY</span>
+                  <p className="item-details-reported-name">Administrator</p>
+                </div>
+                <p className="item-details-claim-message">
+                  Are you the owner of this item? Submit your proof to claim it back.
+                </p>
+                <button className="item-details-claim-btn" onClick={handleClaimClick}>
+                  Claim This Item
+                </button>
+                <p className="item-details-posted-date">
+                  Posted on {formatDateTime(item.created_at)}
+                </p>
+                <p className="item-details-security-notice">
+                  Security Notice: All items are securely stored and inventoried. 
+                  They are kept for strictly 30 days before being donated to local 
+                  charities or disposed of according to SIIT policy.
+                </p>
               </div>
             )}
-
-            <div className="item-info">
-              <div className="info-row">
-                <div className="info-box">
-                  <label>CATEGORY</label>
-                  <p>{item.category || "Uncategorized"}</p>
-                </div>
-                <div className="info-box">
-                  <label>DATE REPORTED</label>
-                  <p>{formatDate(item.created_at)}</p>
-                </div>
-              </div>
-              <div className="info-row">
-                <div className="info-box">
-                  <label>LOCATION</label>
-                  <p>{item.location}</p>
-                </div>
-              </div>
-              <div className="info-box full-width">
-                <label>DESCRIPTION</label>
-                <p>{item.description || "No description provided"}</p>
-              </div>
-            </div>
           </div>
-
-          {item.type === "found" && (
-            <div className="claim-section">
-              <div className="reported-by">
-                <span className="reported-by-label">REPORTED BY</span>
-                <p className="reported-by-name">TEACHER</p>
-                <p className="reported-by-email">{item.users?.name || item.users?.email || "Anonymous"}</p>
-              </div>
-              <p className="claim-message">
-                Are you the owner of this item? Submit your proof to claim it back.
-              </p>
-              <button className="claim-item-btn" onClick={handleClaimClick}>
-                Claim This Item
-              </button>
-              <p className="posted-date">
-                Posted on {formatDateTime(item.created_at)}
-              </p>
-              <p className="security-notice">
-                Security Notice: All items are securely stored and inventoried. 
-                They are kept for strictly 30 days before being donated to local 
-                charities or disposed of according to SIIT policy.
-              </p>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      {showClaimForm && (
+      {showClaimForm && item && (
         <ClaimFormModal item={item} onClose={() => setShowClaimForm(false)} />
       )}
     </div>
@@ -217,52 +213,74 @@ const ClaimFormModal = ({ item, onClose }) => {
     
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
-    const { error } = await supabase
-      .from('claims')
-      .insert([{
-        report_id: item.id,
-        student_id: user.id,
-        proof_of_ownership: formData.description + " | Brand: " + formData.colorBrand + " | Marks: " + formData.uniqueMarks,
-        claim_date: new Date(),
-        status: 'pending'
-      }]);
+    console.log("User object:", user);
+    console.log("Item ID:", item.id);
     
-    if (error) {
-      alert("Error submitting claim: " + error.message);
-    } else {
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+    if (!user.id) {
+      alert("Please login first");
+      setSubmitting(false);
+      return;
     }
+    
+    const claimData = {
+      report_id: item.id,
+      student_id: user.id,
+      proof_of_ownership: `${formData.description} | Color/Brand: ${formData.colorBrand} | Marks: ${formData.uniqueMarks}`,
+      claim_date: new Date().toISOString(),
+      status: 'pending'
+    };
+    
+    console.log("Submitting claim:", claimData);
+    
+    try {
+      const { data, error } = await supabase
+        .from('claims')
+        .insert([claimData])
+        .select();
+      
+      console.log("Response:", { data, error });
+      
+      if (error) {
+        alert("Error: " + error.message);
+      } else {
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Error submitting claim: " + err.message);
+    }
+    
     setSubmitting(false);
   };
 
   if (success) {
     return (
-      <div className="modal-overlay">
-        <div className="modal-container">
+      <div className="item-details-modal-overlay">
+        <div className="item-details-modal-container">
           <h2>Claim Submitted!</h2>
           <p>Your claim has been submitted. Admin will review it shortly.</p>
-          <button onClick={onClose} className="close-modal-btn">Close</button>
+          <button onClick={onClose} className="item-details-close-modal-btn">Close</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
+    <div className="item-details-modal-overlay">
+      <div className="item-details-modal-container">
+        <div className="item-details-modal-header">
           <h2>Submit Claim Request</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button className="item-details-modal-close" onClick={onClose}>×</button>
         </div>
-        <p className="modal-subtitle">
+        <p className="item-details-modal-subtitle">
           To prevent fake claims, please provide accurate details that only the owner would know.
         </p>
         
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="item-details-form-group">
             <label>DETAILED DESCRIPTION</label>
             <textarea
               name="description"
@@ -273,7 +291,7 @@ const ClaimFormModal = ({ item, onClose }) => {
             />
           </div>
           
-          <div className="form-group">
+          <div className="item-details-form-group">
             <label>COLOR / BRAND</label>
             <input
               type="text"
@@ -285,7 +303,7 @@ const ClaimFormModal = ({ item, onClose }) => {
             />
           </div>
           
-          <div className="form-group">
+          <div className="item-details-form-group">
             <label>UNIQUE MARKS / FEATURES</label>
             <input
               type="text"
@@ -297,17 +315,17 @@ const ClaimFormModal = ({ item, onClose }) => {
             />
           </div>
           
-          <div className="form-group">
+          <div className="item-details-form-group">
             <label>UPLOAD ID OR PROOF (OPTIONAL)</label>
-            <div className="file-input-wrapper">
+            <div className="item-details-file-wrapper">
               <input type="file" onChange={handleFileChange} accept="image/*" id="proof-file" />
-              <label htmlFor="proof-file" className="file-label">Choose File</label>
-              <span className="file-name">{formData.proofFile ? formData.proofFile.name : "No file chosen"}</span>
+              <label htmlFor="proof-file" className="item-details-file-label">Choose File</label>
+              <span className="item-details-file-name">{formData.proofFile ? formData.proofFile.name : "No file chosen"}</span>
             </div>
-            <small>Receipt, photo of you with the item, or Student ID.</small>
+            <small className="item-details-form-small">Receipt, photo of you with the item, or Student ID.</small>
           </div>
           
-          <button type="submit" disabled={submitting} className="submit-claim-btn">
+          <button type="submit" disabled={submitting} className="item-details-submit-btn">
             {submitting ? "Submitting..." : "SUBMIT PROOF & CLAIM"}
           </button>
         </form>

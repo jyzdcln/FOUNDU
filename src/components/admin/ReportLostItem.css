@@ -288,3 +288,14 @@
     flex: 1;
   }
 }
+.reportlost-loading {
+  margin-top: 10px;
+  color: #2b5797;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reportlost-submit-btn:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}

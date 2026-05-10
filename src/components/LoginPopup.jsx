@@ -32,7 +32,7 @@ const LoginPopup = ({
               ? "Office 365 Login" 
               : showAdminForm 
                 ? "Admin Login" 
-                : "Login to FoundU"}
+                : "Log in"}
           </h2>
           <button className="close-btn" onClick={handleClosePopup}>×</button>
         </div>
