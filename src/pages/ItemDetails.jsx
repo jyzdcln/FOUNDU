@@ -6,7 +6,6 @@ import "./StudentDashboard.css";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
 import studentUserIcon from "../assets/icons/admin-user-icon.png";
 import studentDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
-import studentLogoutIcon from "../assets/icons/Studentlogout-icon.png";
 
 const ItemDetails = () => {
   const { id } = useParams();
@@ -101,7 +100,6 @@ const ItemDetails = () => {
               {isDropdownOpen && (
                 <div className="dropdown-menu">
                   <button className="dropdown-item" onClick={handleLogout}>
-                    <img src={studentLogoutIcon} alt="logout" className="dropdown-icon-img" />
                     Logout
                   </button>
                 </div>

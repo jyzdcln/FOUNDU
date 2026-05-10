@@ -8,6 +8,7 @@ import ClaimedItems from "./ClaimedItems";
 import UnclaimedItems from "./UnclaimedItems";
 import Notifications from "./Notifications";
 import { getReports } from "../services/reportService";
+import { supabase } from "../services/supabase";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
 import viewReportsIcon from "../assets/icons/view-icon.png";
@@ -27,6 +28,7 @@ const AdminDashboard = () => {
   const [reportType, setReportType] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [recentNotifications, setRecentNotifications] = useState([]);
   const dropdownRef = useRef(null);
   const notificationRef = useRef(null);
 
@@ -45,9 +47,6 @@ const AdminDashboard = () => {
   const handleMenuClick = (menu) => {
     setShowReportForm(false);
     setActiveMenu(menu);
-    if (menu === "viewreports") {
-      loadAllReports();
-    }
     setIsNotificationOpen(false);
   };
 
@@ -75,6 +74,51 @@ const AdminDashboard = () => {
     setIsDropdownOpen(false);
   };
 
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    if (seconds < 60) return `${seconds} seconds ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minutes ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  const loadRecentNotifications = async () => {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('id, type, title, created_at')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+      .limit(5);
+    
+    if (error) {
+      console.error("Error loading notifications:", error);
+    } else if (data) {
+      const formatted = data.map(report => {
+        let message = "";
+        if (report.type === "lost") {
+          message = `Student reported a lost item: ${report.title}`;
+        } else if (report.type === "found") {
+          message = `Student reported a found item: ${report.title}`;
+        }
+        
+        return {
+          id: report.id,
+          message: message,
+          time: formatTimeAgo(report.created_at),
+          read: false
+        };
+      });
+      setRecentNotifications(formatted);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -92,11 +136,19 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     loadAllReports();
+    loadRecentNotifications();
   }, []);
 
   const loadAllReports = async () => {
     const reports = await getReports();
     setAllReports(reports);
+  };
+
+  const refreshReports = async () => {
+    const reports = await getReports();
+    setAllReports(reports);
+    await loadRecentNotifications();
+    return reports;
   };
 
   const getPageTitle = () => {
@@ -126,7 +178,7 @@ const AdminDashboard = () => {
       case "dashboard":
         return <div className="content-box"></div>;
       case "viewreports":
-        return <ViewReports />;
+        return <ViewReports onRefresh={refreshReports} />;
       case "unclaimed":
         return <UnclaimedItems />;
       case "claimed":
@@ -205,7 +257,7 @@ const AdminDashboard = () => {
             <div className="notification-bell" ref={notificationRef}>
               <div className="notification-icon" onClick={toggleNotification}>
                 <img src={notificationIcon} alt="notifications" className="notification-icon-img" />
-                <span className="notification-badge">3</span>
+                <span className="notification-badge">{pendingCount}</span>
               </div>
               {isNotificationOpen && (
                 <div className="notification-dropdown">
@@ -214,24 +266,23 @@ const AdminDashboard = () => {
                     <button className="mark-all-read">Mark all as read</button>
                   </div>
                   <div className="notification-list">
-                    <div className="notification-item unread">
-                      <div className="notification-content">
-                        <p className="notification-message">New report submitted by student</p>
-                        <span className="notification-time">5 minutes ago</span>
+                    {recentNotifications.length === 0 ? (
+                      <div className="notification-item">
+                        <div className="notification-content">
+                          <p className="notification-message">No new notifications</p>
+                          <span className="notification-time">---</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="notification-item">
-                      <div className="notification-content">
-                        <p className="notification-message">Report has been verified</p>
-                        <span className="notification-time">1 hour ago</span>
-                      </div>
-                    </div>
-                    <div className="notification-item">
-                      <div className="notification-content">
-                        <p className="notification-message">New claim submitted for item</p>
-                        <span className="notification-time">3 hours ago</span>
-                      </div>
-                    </div>
+                    ) : (
+                      recentNotifications.map((notif, index) => (
+                        <div key={index} className="notification-item unread">
+                          <div className="notification-content">
+                            <p className="notification-message">{notif.message}</p>
+                            <span className="notification-time">{notif.time}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                   <div className="notification-footer">
                     <button className="view-all-btn" onClick={() => handleMenuClick("notifications")}>

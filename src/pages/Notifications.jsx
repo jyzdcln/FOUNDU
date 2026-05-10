@@ -18,34 +18,22 @@ const Notifications = () => {
         id,
         type,
         title,
-        status,
-        created_at,
-        users(name, email)
+        created_at
       `)
+      .eq('status', 'pending')
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(50);
     
     if (error) {
       console.error("Error loading notifications:", error);
     } else {
       const formattedNotifications = data.map(report => {
         let message = "";
-        let notifType = "report";
         
         if (report.type === "lost") {
           message = `Student reported a lost item: ${report.title}`;
-          notifType = "lost";
         } else if (report.type === "found") {
           message = `Student reported a found item: ${report.title}`;
-          notifType = "found";
-        }
-        
-        if (report.status === "verified") {
-          message = `${report.title} has been verified`;
-          notifType = "verification";
-        } else if (report.status === "claimed") {
-          message = `${report.title} has been claimed`;
-          notifType = "claim";
         }
         
         return {
@@ -53,7 +41,7 @@ const Notifications = () => {
           message: message,
           time: formatTimeAgo(report.created_at),
           read: false,
-          type: notifType
+          type: report.type
         };
       });
       
@@ -132,12 +120,6 @@ const Notifications = () => {
                     )}
                     {notification.type === 'found' && (
                       <path d="M20 6L9 17L4 12" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    )}
-                    {notification.type === 'verification' && (
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#2b5797" strokeWidth="2" fill="none"/>
-                    )}
-                    {notification.type === 'claim' && (
-                      <path d="M20 7H4v10h16V7z" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     )}
                   </svg>
                 </div>

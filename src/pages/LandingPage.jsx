@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import LoginPopup from "../components/LoginPopup";
 import "../styles/global.css";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
@@ -7,6 +7,8 @@ import { supabase } from "../services/supabase";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasOpenedPopup = useRef(false);
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showAdminForm, setShowAdminForm] = useState(false);
@@ -20,6 +22,15 @@ const LandingPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
+    if (location.state?.openLogin && !hasOpenedPopup.current) {
+      hasOpenedPopup.current = true;
+      window.scrollTo(0, 0);
+      handleLoginClick();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location]);
+
+  useEffect(() => {
     if (showLoginPopup) {
       document.body.style.overflow = "hidden";
     } else {
@@ -31,6 +42,7 @@ const LandingPage = () => {
   }, [showLoginPopup]);
 
   const handleLoginClick = () => {
+    window.scrollTo(0, 0);
     setShowLoginPopup(true);
     setShowAdminForm(false);
     setShowOffice365Form(false);
@@ -130,6 +142,10 @@ const LandingPage = () => {
     }
   };
 
+  const handleBrowseClick = () => {
+    navigate("/browse");
+  };
+
   const handleLostClick = () => {
     alert("Report Lost Item - Coming soon!");
   };
@@ -150,6 +166,7 @@ const LandingPage = () => {
               <span className="lang">Home</span>
               <span className="lang">About</span>
               <span className="lang">Contact</span>
+              <span className="lang" onClick={handleBrowseClick}>Browse</span>
             </div>
             <div className="header-actions">
               <button className="login-btn" onClick={handleLoginClick}>

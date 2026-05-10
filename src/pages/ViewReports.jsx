@@ -1,133 +1,312 @@
 import React, { useState, useEffect } from "react";
-import { getReports, updateReportStatus, deleteReport } from "../services/reportService";
+import { updateReportStatus, deleteReport, getReports } from "../services/reportService";
+import "./ViewReports.css";
+import locationIcon from "../assets/icons/location-icons.png";
+import searchIcon from "../assets/icons/Viewreport-icons.png";
+import downArrowIcon from "../assets/icons/down-arrow-icon.png";
 
-const ViewReports = () => {
+const ViewReports = ({ onRefresh }) => {
   const [allReports, setAllReports] = useState([]);
-  const [filter, setFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const statusDropdownRef = React.useRef(null);
+  const categoryDropdownRef = React.useRef(null);
 
   useEffect(() => {
     loadAllReports();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
+        setIsStatusDropdownOpen(false);
+      }
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+        setIsCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const loadAllReports = async () => {
+    setLoading(true);
     const reports = await getReports();
+    console.log("Fetched reports:", reports);
     setAllReports(reports);
+    setLoading(false);
   };
 
   const handleVerify = async (id) => {
     await updateReportStatus(id, "verified");
-    loadAllReports();
-    alert("Report verified!");
-  };
-
-  const handleReject = async (id) => {
-    await updateReportStatus(id, "rejected");
-    loadAllReports();
-    alert("Report rejected");
+    await loadAllReports();
+    if (onRefresh) await onRefresh();
+    alert("Report verified! It will now appear in student browse.");
+    setShowDetailModal(false);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this report?")) {
       await deleteReport(id);
-      loadAllReports();
+      await loadAllReports();
+      if (onRefresh) await onRefresh();
       alert("Report deleted successfully");
+      setShowDetailModal(false);
     }
   };
 
+  const handleEdit = (report) => {
+    alert(`Edit function coming soon!\n\nItem: ${report.title}`);
+    setShowDetailModal(false);
+  };
+
+  const handleViewDetails = (report) => {
+    setSelectedReport(report);
+    setShowDetailModal(true);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+  };
+
   const getFilteredReports = () => {
-    if (filter === "all") return allReports;
-    return allReports.filter(r => r.status === filter);
+    let filtered = allReports;
+    
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(r => r.status === statusFilter);
+    }
+    
+    if (searchTerm) {
+      filtered = filtered.filter(r => 
+        r.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.location?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter(r => r.category === categoryFilter);
+    }
+    
+    return filtered;
   };
 
   const filteredReports = getFilteredReports();
   const pendingCount = allReports.filter(r => r.status === "pending").length;
   const verifiedCount = allReports.filter(r => r.status === "verified").length;
   const rejectedCount = allReports.filter(r => r.status === "rejected").length;
+  
+  const uniqueCategories = ["all", ...new Set(allReports.map(r => r.category).filter(Boolean))];
+
+  const getStatusLabel = () => {
+    switch(statusFilter) {
+      case "all": return `All (${allReports.length})`;
+      case "pending": return `Pending (${pendingCount})`;
+      case "verified": return `Verified (${verifiedCount})`;
+      case "rejected": return `Rejected (${rejectedCount})`;
+      default: return `All (${allReports.length})`;
+    }
+  };
+
+  const getCategoryLabel = () => {
+    if (categoryFilter === "all") return "All Categories";
+    return categoryFilter;
+  };
+
+  if (loading) {
+    return (
+      <div className="vr-loading-container">
+        <div className="vr-loading-spinner"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="content-box">
-      <h3>All Reports</h3>
-      <p className="info-text">Reports submitted by students</p>
-      
-      <div className="filter-buttons">
-        <button 
-          className={`filter-btn ${filter === "all" ? "active" : ""}`}
-          onClick={() => setFilter("all")}
-        >
-          All ({allReports.length})
-        </button>
-        <button 
-          className={`filter-btn ${filter === "pending" ? "active" : ""}`}
-          onClick={() => setFilter("pending")}
-        >
-          Pending ({pendingCount})
-        </button>
-        <button 
-          className={`filter-btn ${filter === "verified" ? "active" : ""}`}
-          onClick={() => setFilter("verified")}
-        >
-          Verified ({verifiedCount})
-        </button>
-        <button 
-          className={`filter-btn ${filter === "rejected" ? "active" : ""}`}
-          onClick={() => setFilter("rejected")}
-        >
-          Rejected ({rejectedCount})
-        </button>
+    <div className="vr-container">
+      <div className="vr-header-row">
+        <div className="vr-left-section">
+          <div className="vr-search-box">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="vr-search-input"
+            />
+            <img src={searchIcon} alt="search" className="vr-search-icon-img" />
+          </div>
+          
+          <div className="vr-category-dropdown" ref={categoryDropdownRef}>
+            <button 
+              className="vr-category-dropdown-btn"
+              onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+            >
+              {getCategoryLabel()}
+              <img src={downArrowIcon} alt="dropdown" className="vr-dropdown-arrow-img" />
+            </button>
+            {isCategoryDropdownOpen && (
+              <div className="vr-category-dropdown-menu">
+                {uniqueCategories.map(cat => (
+                  <button 
+                    key={cat}
+                    className={`vr-category-dropdown-item ${categoryFilter === cat ? "active" : ""}`}
+                    onClick={() => {
+                      setCategoryFilter(cat);
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                  >
+                    {cat === "all" ? "All Categories" : cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="vr-status-dropdown" ref={statusDropdownRef}>
+            <button 
+              className="vr-status-dropdown-btn"
+              onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+            >
+              {getStatusLabel()}
+              <img src={downArrowIcon} alt="dropdown" className="vr-dropdown-arrow-img" />
+            </button>
+            {isStatusDropdownOpen && (
+              <div className="vr-status-dropdown-menu">
+                <button 
+                  className={`vr-status-dropdown-item ${statusFilter === "all" ? "active" : ""}`}
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setIsStatusDropdownOpen(false);
+                  }}
+                >
+                  All ({allReports.length})
+                </button>
+                <button 
+                  className={`vr-status-dropdown-item ${statusFilter === "pending" ? "active" : ""}`}
+                  onClick={() => {
+                    setStatusFilter("pending");
+                    setIsStatusDropdownOpen(false);
+                  }}
+                >
+                  Pending ({pendingCount})
+                </button>
+                <button 
+                  className={`vr-status-dropdown-item ${statusFilter === "verified" ? "active" : ""}`}
+                  onClick={() => {
+                    setStatusFilter("verified");
+                    setIsStatusDropdownOpen(false);
+                  }}
+                >
+                  Verified ({verifiedCount})
+                </button>
+                <button 
+                  className={`vr-status-dropdown-item ${statusFilter === "rejected" ? "active" : ""}`}
+                  onClick={() => {
+                    setStatusFilter("rejected");
+                    setIsStatusDropdownOpen(false);
+                  }}
+                >
+                  Rejected ({rejectedCount})
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {filteredReports.length === 0 ? (
-        <p>No {filter !== "all" ? filter : ""} reports found</p>
+        <div className="vr-empty-state">
+          <p>No reports found</p>
+        </div>
       ) : (
-        <div className="report-list">
+        <div className="vr-reports-grid">
           {filteredReports.map((report) => (
-            <div key={report.id} className="report-item">
-              <div className="report-details">
-                <div className="report-header">
-                  <strong className="report-title">{report.title}</strong>
-                  <span className={`status-badge status-${report.status}`}>
-                    {report.status?.toUpperCase()}
-                  </span>
-                </div>
-                <p><strong>Type:</strong> {report.type?.toUpperCase()}</p>
-                <p><strong>Category:</strong> {report.category}</p>
-                <p><strong>Location:</strong> {report.location}</p>
-                <p><strong>Date:</strong> {report.date}</p>
-                <p><strong>Description:</strong> {report.description}</p>
-                <p><strong>Reported by:</strong> {report.users?.name || "Student"}</p>
+            <div key={report.id} className="vr-report-card">
+              <div className="vr-report-card-image">
+                {report.photo_url ? (
+                  <img src={report.photo_url} alt={report.title} />
+                ) : (
+                  <span>No image</span>
+                )}
               </div>
-              <div className="report-actions">
-                {report.status === "pending" && (
-                  <>
-                    <button 
-                      className="verify-btn"
-                      onClick={() => handleVerify(report.id)}
-                    >
-                      Verify
-                    </button>
-                    <button 
-                      className="reject-btn"
-                      onClick={() => handleReject(report.id)}
-                    >
-                      Reject
-                    </button>
-                  </>
+              <div className="vr-report-card-content">
+                <div className="vr-report-card-header">
+                  <div className={`vr-report-type-badge ${report.type}`}>
+                    {report.type === "lost" ? "LOST" : "FOUND"}
+                  </div>
+                  <div className="vr-report-date">
+                    {formatDate(report.created_at)}
+                  </div>
+                </div>
+                <div className="vr-report-category">{report.category || "Item"}</div>
+                <div className="vr-report-title">{report.title}</div>
+                <div className="vr-report-location">
+                  <img src={locationIcon} alt="location" className="vr-location-icon" />
+                  {report.location}
+                </div>
+              </div>
+              <button 
+                className="vr-view-details-btn"
+                onClick={() => handleViewDetails(report)}
+              >
+                VIEW DETAILS
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showDetailModal && selectedReport && (
+        <div className="vr-modal-overlay">
+          <div className="vr-modal-container">
+            <div className="vr-modal-header">
+              <h2>{selectedReport.title}</h2>
+              <button className="vr-modal-close" onClick={() => setShowDetailModal(false)}>×</button>
+            </div>
+            <div className="vr-modal-body">
+              <div className="vr-modal-info">
+                <p><strong>Type:</strong> {selectedReport.type?.toUpperCase()}</p>
+                <p><strong>Category:</strong> {selectedReport.category}</p>
+                <p><strong>Location:</strong> {selectedReport.location}</p>
+                <p><strong>Date:</strong> {selectedReport.date || formatDate(selectedReport.created_at)}</p>
+                <p><strong>Description:</strong> {selectedReport.description}</p>
+                <p><strong>Reported by:</strong> {selectedReport.users?.name || selectedReport.users?.email || "Student"}</p>
+                <p><strong>Status:</strong> <span className={`vr-status-badge vr-status-${selectedReport.status}`}>{selectedReport.status?.toUpperCase()}</span></p>
+              </div>
+              <div className="vr-modal-actions">
+                {selectedReport.status === "pending" && (
+                  <button 
+                    className="vr-modal-verify-btn"
+                    onClick={() => handleVerify(selectedReport.id)}
+                  >
+                    Verify
+                  </button>
                 )}
                 <button 
-                  className="edit-btn"
-                  onClick={() => alert("Edit function coming soon!")}
+                  className="vr-modal-edit-btn"
+                  onClick={() => handleEdit(selectedReport)}
                 >
                   Edit
                 </button>
                 <button 
-                  className="delete-btn"
-                  onClick={() => handleDelete(report.id)}
+                  className="vr-modal-delete-btn"
+                  onClick={() => handleDelete(selectedReport.id)}
                 >
                   Delete
                 </button>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       )}
     </div>

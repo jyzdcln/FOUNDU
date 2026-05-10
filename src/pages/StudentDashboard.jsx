@@ -5,7 +5,10 @@ import { getReports } from "../services/reportService";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
 import studentUserIcon from "../assets/icons/admin-user-icon.png";
 import studentDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
-import studentLogoutIcon from "../assets/icons/Studentlogout-icon.png";
+import ReportLostItemModal from "../components/student/ReportLostItemModal";
+import ReportFoundItemModal from "../components/student/ReportFoundItemModal";
+import locationIcon from "../assets/icons/location-icons.png";
+import tagIcon from "../assets/icons/tag-icons.png";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -13,9 +16,13 @@ const StudentDashboard = () => {
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
   const [showBrowse, setShowBrowse] = useState(true);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isReportDropdownOpen, setIsReportDropdownOpen] = useState(false);
+  const [showReportLostModal, setShowReportLostModal] = useState(false);
+  const [showReportFoundModal, setShowReportFoundModal] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const dropdownRef = useRef(null);
+  const userDropdownRef = useRef(null);
+  const reportDropdownRef = useRef(null);
   
   const [filters, setFilters] = useState({
     keyword: "",
@@ -41,8 +48,11 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setIsUserDropdownOpen(false);
+      }
+      if (reportDropdownRef.current && !reportDropdownRef.current.contains(event.target)) {
+        setIsReportDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -62,7 +72,7 @@ const StudentDashboard = () => {
   };
 
   const applyFilters = () => {
-    let filtered = [...reports];
+    let filtered = reports.filter(report => report.status === "verified");
     
     if (filters.keyword) {
       filtered = filtered.filter(report => 
@@ -99,15 +109,14 @@ const StudentDashboard = () => {
     navigate(`/item-details/${reportId}`);
   };
 
-  const getStatusBadgeClass = (status) => {
-    switch(status) {
-      case "pending": return "status-pending";
-      case "verified": return "status-verified";
-      case "matched": return "status-matched";
-      case "claimed": return "status-claimed";
-      case "returned": return "status-returned";
-      default: return "status-pending";
-    }
+  const handleReportLost = () => {
+    setShowReportLostModal(true);
+    setIsReportDropdownOpen(false);
+  };
+
+  const handleReportFound = () => {
+    setShowReportFoundModal(true);
+    setIsReportDropdownOpen(false);
   };
 
   const formatDate = (dateString) => {
@@ -172,10 +181,10 @@ const StudentDashboard = () => {
           <div className="student-header-actions">
             <span className="student-lang" onClick={handleBrowse}>Browse</span>
             <span className="student-lang" onClick={handleDashboard}>Dashboard</span>
-            <div className="user-dropdown" ref={dropdownRef}>
+            <div className="user-dropdown" ref={userDropdownRef}>
               <div 
                 className="user-dropdown-trigger" 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
               >
                 <div className="user-icon">
                   <img src={studentUserIcon} alt="user" className="user-icon-img" />
@@ -184,10 +193,9 @@ const StudentDashboard = () => {
                   <img src={studentDropdownIcon} alt="dropdown" className="dropdown-icon-img" />
                 </div>
               </div>
-              {isDropdownOpen && (
+              {isUserDropdownOpen && (
                 <div className="dropdown-menu">
                   <button className="dropdown-item" onClick={handleLogout}>
-                    <img src={studentLogoutIcon} alt="logout" className="dropdown-icon-img" />
                     Logout
                   </button>
                 </div>
@@ -199,20 +207,44 @@ const StudentDashboard = () => {
 
       <div className="student-main-content">
         {!showBrowse ? (
-          <div className="student-stats-cards">
-            <div className="student-stat-card">
-              <div className="student-stat-value">{reports.length}</div>
-              <div className="student-stat-label">TOTAL REPORTS</div>
+          <>
+            <div className="report-new-item-section">
+              <div className="report-dropdown" ref={reportDropdownRef}>
+                <button 
+                  className="report-dropdown-btn"
+                  onClick={() => setIsReportDropdownOpen(!isReportDropdownOpen)}
+                >
+                  Report New Item
+                  <img src={studentDropdownIcon} alt="dropdown" className="report-dropdown-arrow" />
+                </button>
+                {isReportDropdownOpen && (
+                  <div className="report-dropdown-menu">
+                    <button className="report-dropdown-item" onClick={handleReportLost}>
+                      I Lost Something
+                    </button>
+                    <button className="report-dropdown-item" onClick={handleReportFound}>
+                      I Found Something
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="student-stat-card">
-              <div className="student-stat-value">{reports.filter(r => r.type === "lost").length}</div>
-              <div className="student-stat-label">LOST ITEMS</div>
+
+            <div className="student-stats-cards">
+              <div className="student-stat-card">
+                <div className="student-stat-value">{reports.length}</div>
+                <div className="student-stat-label">TOTAL REPORTS</div>
+              </div>
+              <div className="student-stat-card">
+                <div className="student-stat-value">{reports.filter(r => r.type === "lost").length}</div>
+                <div className="student-stat-label">LOST ITEMS</div>
+              </div>
+              <div className="student-stat-card">
+                <div className="student-stat-value">{reports.filter(r => r.type === "found").length}</div>
+                <div className="student-stat-label">FOUND ITEMS</div>
+              </div>
             </div>
-            <div className="student-stat-card">
-              <div className="student-stat-value">{reports.filter(r => r.type === "found").length}</div>
-              <div className="student-stat-label">FOUND ITEMS</div>
-            </div>
-          </div>
+          </>
         ) : (
           <div className="browse-layout">
             <div className="browse-sidebar">
@@ -317,16 +349,27 @@ const StudentDashboard = () => {
                       </div>
                       <div className="browse-item-card-content">
                         <div className="browse-item-card-header">
-                          <div className={`browse-item-type-badge ${report.type}`}>
-                            {report.type === "lost" ? "LOST" : "FOUND"}
+                          <div className="browse-item-type-wrapper">
+                            <div className={`browse-item-type-badge ${report.type}`}>
+                              {report.type === "lost" ? "LOST" : "FOUND"}
+                            </div>
+                            <div className={`status-badge ${report.status}`}>
+                              {report.status === "verified" ? "VERIFIED" : "PENDING"}
+                            </div>
                           </div>
                           <div className="browse-item-date">
                             {formatDate(report.created_at)}
                           </div>
                         </div>
-                        <div className="browse-item-category">{report.category || "Item"}</div>
+                        <div className="browse-item-category">
+                          <img src={tagIcon} alt="category" className="browse-category-icon-img" />
+                          {report.category || "Item"}
+                        </div>
                         <div className="browse-item-title">{report.title}</div>
-                        <div className="browse-item-location">{report.location}</div>
+                        <div className="browse-item-location">
+                          <img src={locationIcon} alt="location" className="browse-location-icon-img" />
+                          {report.location}
+                        </div>
                       </div>
                       <button 
                         className="browse-view-details-btn"
@@ -342,6 +385,13 @@ const StudentDashboard = () => {
           </div>
         )}
       </div>
+
+      {showReportLostModal && (
+        <ReportLostItemModal onClose={() => setShowReportLostModal(false)} onSuccess={loadReports} />
+      )}
+      {showReportFoundModal && (
+        <ReportFoundItemModal onClose={() => setShowReportFoundModal(false)} onSuccess={loadReports} />
+      )}
     </div>
   );
 };
