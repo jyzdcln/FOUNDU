@@ -1,28 +1,39 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./StudentDashboard.css";
-import { getReports } from "../services/reportService";
+import "./StudentDashboardBrowse.css";
+
+import { getReports, getReportsByUser, getStudentNotifications, subscribeToStatusChanges } from "../services/reportService";
 import founduLogo from "../assets/icons/foundulogo-icon.png";
 import studentUserIcon from "../assets/icons/admin-user-icon.png";
 import studentDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
+import notificationIcon from "../assets/icons/notification-icon.png";
 import ReportLostItemModal from "../components/student/ReportLostItemModal";
 import ReportFoundItemModal from "../components/student/ReportFoundItemModal";
+import StudentEditReportModal from "../components/student/StudentEditReportModal";
 import locationIcon from "../assets/icons/location-icons.png";
 import tagIcon from "../assets/icons/tag-icons.png";
+import { supabase } from "../services/supabase";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
+  const [userReports, setUserReports] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [showBrowse, setShowBrowse] = useState(true);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isReportDropdownOpen, setIsReportDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [showReportLostModal, setShowReportLostModal] = useState(false);
   const [showReportFoundModal, setShowReportFoundModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedReportForEdit, setSelectedReportForEdit] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const userDropdownRef = useRef(null);
   const reportDropdownRef = useRef(null);
+  const notificationRef = useRef(null);
   
   const [filters, setFilters] = useState({
     keyword: "",
@@ -32,6 +43,8 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     loadReports();
+    loadUserReports();
+    loadNotifications();
   }, []);
 
   useEffect(() => {
@@ -54,10 +67,52 @@ const StudentDashboard = () => {
       if (reportDropdownRef.current && !reportDropdownRef.current.contains(event.target)) {
         setIsReportDropdownOpen(false);
       }
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) return;
+    
+    const subscription = supabase
+      .channel('student-reports-channel')
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'reports',
+          filter: `user_id=eq.${user.id}`
+        },
+        async (payload) => {
+          console.log('Your report status changed!', payload);
+          
+          await loadReports();
+          await loadUserReports();
+          await loadNotifications();
+          
+          const newStatus = payload.new.status;
+          const reportTitle = payload.new.title;
+          
+          if (newStatus === 'verified') {
+            alert(`✅ Good news! Your report "${reportTitle}" has been verified!`);
+          } else if (newStatus === 'returned') {
+            alert(`📝 Your report "${reportTitle}" needs attention. Please edit and resubmit.`);
+          } else if (newStatus === 'rejected') {
+            alert(`❌ Your report "${reportTitle}" was rejected. Please contact admin.`);
+          }
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -69,6 +124,22 @@ const StudentDashboard = () => {
     setTimeout(() => {
       setInitialLoading(false);
     }, 500);
+  };
+
+  const loadUserReports = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.id) {
+      const reports = await getReportsByUser(user.id);
+      setUserReports(reports);
+    }
+  };
+
+  const loadNotifications = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.id) {
+      const notifs = await getStudentNotifications(user.id);
+      setNotifications(notifs);
+    }
   };
 
   const applyFilters = () => {
@@ -99,10 +170,12 @@ const StudentDashboard = () => {
 
   const handleBrowse = () => {
     setShowBrowse(true);
+    setIsNotificationOpen(false);
   };
 
   const handleDashboard = () => {
     setShowBrowse(false);
+    setIsNotificationOpen(false);
   };
 
   const handleViewDetails = (reportId) => {
@@ -119,10 +192,35 @@ const StudentDashboard = () => {
     setIsReportDropdownOpen(false);
   };
 
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  const markNotificationAsRead = async (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ));
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "Invalid Date";
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+  };
+
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    if (seconds < 60) return `${seconds} seconds ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minutes ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} days ago`;
+    return date.toLocaleDateString();
   };
 
   const handleFilterChange = (key, value) => {
@@ -138,6 +236,9 @@ const StudentDashboard = () => {
   };
 
   const uniqueCategories = ["All Categories", ...new Set(reports.map(r => r.category).filter(Boolean))];
+
+  const reportsNeedingAttention = userReports.filter(r => r.status === "returned" || r.status === "pending");
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   if (initialLoading && reports.length === 0) {
     return (
@@ -181,6 +282,44 @@ const StudentDashboard = () => {
           <div className="student-header-actions">
             <span className="student-lang" onClick={handleBrowse}>Browse</span>
             <span className="student-lang" onClick={handleDashboard}>Dashboard</span>
+            
+            <div className="notification-bell" ref={notificationRef}>
+              <div className="notification-icon" onClick={toggleNotification}>
+                <img src={notificationIcon} alt="notifications" className="notification-icon-img" />
+                {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+              </div>
+              {isNotificationOpen && (
+                <div className="notification-dropdown">
+                  <div className="notification-header">
+                    <h4>Notifications</h4>
+                  </div>
+                  <div className="notification-list">
+                    {notifications.length === 0 ? (
+                      <div className="notification-item">
+                        <div className="notification-content">
+                          <p className="notification-message">No notifications</p>
+                          <span className="notification-time">---</span>
+                        </div>
+                      </div>
+                    ) : (
+                      notifications.map((notif, index) => (
+                        <div 
+                          key={index} 
+                          className={`notification-item ${!notif.read ? 'unread' : ''}`}
+                          onClick={() => markNotificationAsRead(notif.id)}
+                        >
+                          <div className="notification-content">
+                            <p className="notification-message">{notif.message}</p>
+                            <span className="notification-time">{notif.time}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="user-dropdown" ref={userDropdownRef}>
               <div 
                 className="user-dropdown-trigger" 
@@ -244,6 +383,36 @@ const StudentDashboard = () => {
                 <div className="student-stat-label">FOUND ITEMS</div>
               </div>
             </div>
+
+            {reportsNeedingAttention.length > 0 && (
+              <div className="my-reports-section">
+                <h3>My Reports Needing Attention</h3>
+                <div className="my-reports-list">
+                  {reportsNeedingAttention.map(report => (
+                    <div key={report.id} className="my-report-card">
+                      <div className="my-report-info">
+                        <h4>{report.title}</h4>
+                        <p>Status: <span className={`status-${report.status}`}>{report.status.toUpperCase()}</span></p>
+                        {report.admin_notes && (
+                          <p className="admin-note">Note from Admin: {report.admin_notes}</p>
+                        )}
+                      </div>
+                      {report.status === "returned" && (
+                        <button 
+                          className="edit-report-btn"
+                          onClick={() => {
+                            setSelectedReportForEdit(report);
+                            setShowEditModal(true);
+                          }}
+                        >
+                          Edit & Resubmit
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="browse-layout">
@@ -387,10 +556,32 @@ const StudentDashboard = () => {
       </div>
 
       {showReportLostModal && (
-        <ReportLostItemModal onClose={() => setShowReportLostModal(false)} onSuccess={loadReports} />
+        <ReportLostItemModal onClose={() => setShowReportLostModal(false)} onSuccess={() => {
+          loadReports();
+          loadUserReports();
+          loadNotifications();
+        }} />
       )}
       {showReportFoundModal && (
-        <ReportFoundItemModal onClose={() => setShowReportFoundModal(false)} onSuccess={loadReports} />
+        <ReportFoundItemModal onClose={() => setShowReportFoundModal(false)} onSuccess={() => {
+          loadReports();
+          loadUserReports();
+          loadNotifications();
+        }} />
+      )}
+      {showEditModal && selectedReportForEdit && (
+        <StudentEditReportModal
+          report={selectedReportForEdit}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedReportForEdit(null);
+          }}
+          onSuccess={() => {
+            loadReports();
+            loadUserReports();
+            loadNotifications();
+          }}
+        />
       )}
     </div>
   );

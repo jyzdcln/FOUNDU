@@ -1,23 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
+
 import ReportLostItem from "../components/admin/ReportLostItem";
 import ReportFoundItem from "../components/admin/ReportFoundItem";
 import ViewReports from "./ViewReports";
 import ClaimedItems from "./ClaimedItems";
-import UnclaimedItems from "./UnclaimedItems";
+import UnclaimedItems from "./UnclaimedItems";  // ADD THIS BACK
 import Notifications from "./Notifications";
-import { getReports } from "../services/reportService";
+import { getReports, subscribeToNewReports, subscribeToStatusChanges } from "../services/reportService";
 import { supabase } from "../services/supabase";
 
 import dashboardIcon from "../assets/icons/dashboard-icon.png";
 import viewReportsIcon from "../assets/icons/view-icon.png";
 import claimedIcon from "../assets/icons/claimed-icon.png";
+import adminUnclaimedIcon from "../assets/icons/unclaimed-icon.png";  // ADD THIS BACK
 import adminLostIcon from "../assets/icons/admin-lost-icon.png";
 import adminFoundIcon from "../assets/icons/admin-found-icon.png";
 import adminUserIcon from "../assets/icons/admin-user-icon.png";
 import adminDropdownIcon from "../assets/icons/admin-dropdown-icon.png";
-import adminUnclaimedIcon from "../assets/icons/unclaimed-icon.png";
 import notificationIcon from "../assets/icons/notification-icon.png";
 
 const AdminDashboard = () => {
@@ -137,6 +138,34 @@ const AdminDashboard = () => {
   useEffect(() => {
     loadAllReports();
     loadRecentNotifications();
+    
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const newReportSubscription = subscribeToNewReports(async (newReport) => {
+      console.log("New report detected in real-time!", newReport);
+      
+      await loadAllReports();
+      await loadRecentNotifications();
+      
+      if (Notification.permission === "granted") {
+        new Notification(`New ${newReport.type} report: ${newReport.title}`);
+      }
+    });
+    
+    const statusSubscription = subscribeToStatusChanges(async (updatedReport) => {
+      console.log("Report status changed in real-time!", updatedReport);
+      await loadAllReports();
+      await loadRecentNotifications();
+    });
+    
+    return () => {
+      newReportSubscription.unsubscribe();
+      statusSubscription.unsubscribe();
+    };
   }, []);
 
   const loadAllReports = async () => {
@@ -158,7 +187,7 @@ const AdminDashboard = () => {
     switch(activeMenu) {
       case "dashboard": return "Dashboard";
       case "viewreports": return "View Reports";
-      case "unclaimed": return "Unclaimed Items";
+      case "unclaimed": return "Unclaimed Items";  // ADD THIS BACK
       case "claimed": return "Claimed Items";
       case "notifications": return "Notifications";
       default: return "Dashboard";
@@ -179,7 +208,7 @@ const AdminDashboard = () => {
         return <div className="content-box"></div>;
       case "viewreports":
         return <ViewReports onRefresh={refreshReports} />;
-      case "unclaimed":
+      case "unclaimed":  // ADD THIS BACK
         return <UnclaimedItems />;
       case "claimed":
         return <ClaimedItems />;
@@ -194,7 +223,7 @@ const AdminDashboard = () => {
   const verifiedCount = allReports.filter(r => r.status === "verified").length;
   const claimedCount = allReports.filter(r => r.status === "claimed").length;
   const rejectedCount = allReports.filter(r => r.status === "rejected").length;
-  const unclaimedCount = allReports.filter(r => r.status === "verified").length;
+  const unclaimedCount = allReports.filter(r => r.status === "verified").length;  // ADD THIS BACK
 
   return (
     <div className="admin-dashboard">
@@ -219,7 +248,7 @@ const AdminDashboard = () => {
               <img src={viewReportsIcon} alt="view reports" className="nav-icon-img" />
               View Reports
             </button>
-            <button className={`nav-item ${activeMenu === "unclaimed" ? "active" : ""}`} onClick={() => handleMenuClick("unclaimed")}>
+            <button className={`nav-item ${activeMenu === "unclaimed" ? "active" : ""}`} onClick={() => handleMenuClick("unclaimed")}>  {/* ADD THIS BACK */}
               <img src={adminUnclaimedIcon} alt="unclaimed" className="nav-icon-img" />
               Unclaimed Items
               {unclaimedCount > 0 && <span className="nav-badge">{unclaimedCount}</span>}

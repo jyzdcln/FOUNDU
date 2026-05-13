@@ -4,6 +4,7 @@ import "./ViewReports.css";
 import locationIcon from "../assets/icons/location-icons.png";
 import searchIcon from "../assets/icons/Viewreport-icons.png";
 import downArrowIcon from "../assets/icons/down-arrow-icon.png";
+import ReturnToUserModal from "../components/admin/ReturnToUserModal";
 
 const ViewReports = ({ onRefresh }) => {
   const [allReports, setAllReports] = useState([]);
@@ -13,6 +14,8 @@ const ViewReports = ({ onRefresh }) => {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [selectedReportForReturn, setSelectedReportForReturn] = useState(null);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const statusDropdownRef = React.useRef(null);
@@ -53,6 +56,14 @@ const ViewReports = ({ onRefresh }) => {
     setShowDetailModal(false);
   };
 
+  const handleReceive = async (id) => {
+    await updateReportStatus(id, "received");
+    await loadAllReports();
+    if (onRefresh) await onRefresh();
+    alert("Report marked as received.");
+    setShowDetailModal(false);
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this report?")) {
       await deleteReport(id);
@@ -71,6 +82,12 @@ const ViewReports = ({ onRefresh }) => {
   const handleViewDetails = (report) => {
     setSelectedReport(report);
     setShowDetailModal(true);
+  };
+
+  const handleReturnToUser = (report) => {
+    setSelectedReportForReturn(report);
+    setShowReturnModal(true);
+    setShowDetailModal(false);
   };
 
   const formatDate = (dateString) => {
@@ -285,12 +302,36 @@ const ViewReports = ({ onRefresh }) => {
               </div>
               <div className="vr-modal-actions">
                 {selectedReport.status === "pending" && (
-                  <button 
-                    className="vr-modal-verify-btn"
-                    onClick={() => handleVerify(selectedReport.id)}
-                  >
-                    Verify
-                  </button>
+                  <>
+                    <button 
+                      className="vr-modal-receive-btn"
+                      onClick={() => handleReceive(selectedReport.id)}
+                    >
+                      Receive
+                    </button>
+                    <button 
+                      className="vr-modal-return-btn"
+                      onClick={() => handleReturnToUser(selectedReport)}
+                    >
+                      Return to User
+                    </button>
+                  </>
+                )}
+                {selectedReport.status === "received" && (
+                  <>
+                    <button 
+                      className="vr-modal-verify-btn"
+                      onClick={() => handleVerify(selectedReport.id)}
+                    >
+                      Verify
+                    </button>
+                    <button 
+                      className="vr-modal-return-btn"
+                      onClick={() => handleReturnToUser(selectedReport)}
+                    >
+                      Return to User
+                    </button>
+                  </>
                 )}
                 <button 
                   className="vr-modal-edit-btn"
@@ -308,6 +349,20 @@ const ViewReports = ({ onRefresh }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showReturnModal && selectedReportForReturn && (
+        <ReturnToUserModal
+          report={selectedReportForReturn}
+          onClose={() => {
+            setShowReturnModal(false);
+            setSelectedReportForReturn(null);
+          }}
+          onSuccess={() => {
+            loadAllReports();
+            if (onRefresh) onRefresh();
+          }}
+        />
       )}
     </div>
   );

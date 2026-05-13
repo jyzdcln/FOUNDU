@@ -483,3 +483,34 @@
     flex-direction: column;
   }
 }
+.vr-modal-receive-btn {
+  flex: 1;
+  padding: 10px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.vr-modal-receive-btn:hover {
+  background: #138496;
+}
+
+.vr-modal-return-btn {
+  flex: 1;
+  padding: 10px;
+  background: #ffc107;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.vr-modal-return-btn:hover {
+  background: #e0a800;
+}
